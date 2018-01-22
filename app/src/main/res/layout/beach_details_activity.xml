@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/beach_detail_layout"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorPrimary"
+              android:orientation="vertical">
+    <ScrollView android:layout_width="match_parent"
+
+                android:layout_height="match_parent">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/beach_detail_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                android:textColor="@color/icons"
+                android:textSize="30sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/beach_detail_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:textColor="@color/icons"
+                android:textSize="18sp"/>
+
+            <ListView
+                android:id="@+id/beach_attributes_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/beach_detail_share_photo_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorAccent"
+                android:text="Sacar foto y compartir con amigos"
+                android:textColor="@color/icons"/>
+
+            <Button
+                android:id="@+id/detail_navigate_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorAccent"
+                android:text="Navegar a playa"
+                android:textColor="@color/icons"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

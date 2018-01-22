@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:orientation="vertical">
+    <!--<LinearLayout android:id="@+id/layout_container"-->
+                  <!--android:layout_width="match_parent"-->
+                  <!--android:layout_height="wrap_content"-->
+                  <!--android:orientation="vertical">-->
+        <ImageView
+            android:id="@+id/beach_placeholder"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/beach"/>
+
+        <TextView
+            android:id="@+id/beach_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/beach_placeholder"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:lines="2"
+            android:maxLines="2"
+            android:textColor="@color/icons"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:typeface="sans"/>
+
+        <TextView
+            android:id="@+id/beach_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/beach_name"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:lines="4"
+            android:maxLines="4"
+            android:textColor="@color/icons"
+            android:textSize="13sp"
+            android:typeface="sans"/>
+    <!--</LinearLayout>-->
+</RelativeLayout>

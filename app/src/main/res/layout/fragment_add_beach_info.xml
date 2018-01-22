@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@color/colorPrimary"
+              tools:context="com.dirusso_vanderouw.waves.view.fragments.AddBeachInfoFragment">
+
+    <TextView
+        android:id="@+id/add_info_beach_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textColor="@color/icons"
+        android:textSize="30sp"
+        android:textStyle="bold"/>
+
+    <ListView
+        android:id="@+id/add_info_attributes_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/add_info_confirm_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorAccent"
+        android:text="APLICAR"
+        android:textColor="@color/icons"/>
+
+</LinearLayout>

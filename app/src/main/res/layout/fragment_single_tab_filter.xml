@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@color/colorPrimary"
+              tools:context="com.dirusso_vanderouw.waves.view.fragments.SingleTabFilterFragment">
+
+    <ListView
+        android:id="@+id/attributes_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
+
+    <Button
+        android:id="@+id/apply_single_filter_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorAccent"
+        android:text="APLICAR"
+        android:textColor="@color/icons"/>
+
+    <Button
+        android:id="@+id/apply_single_remove_filter_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:text="QUITAR FILTROS"
+        android:textColor="@color/icons"/>
+
+</LinearLayout>
