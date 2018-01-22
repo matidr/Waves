@@ -1,6 +1,3 @@
 # README #
 
-Proyecto para Ingenieria de Software en la Practica
-Obligatorio: Matias di Russo & Mark van der Ouw
-
-Universidad ORT Uruguay
+App for uploading information about the beaches status
