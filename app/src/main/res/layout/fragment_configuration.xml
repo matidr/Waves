@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:background="@color/colorPrimary"
               android:orientation="vertical"
-              tools:context="com.dirusso_vanderouw.waves.view.fragments.ConfigurationFragment">
+              tools:context="com.dirusso.waves.view.fragments.ConfigurationFragment">
 
 
     <ImageView android:layout_width="60dp" android:layout_height="60dp"

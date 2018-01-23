@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:background="@color/colorPrimary"
-              tools:context="com.dirusso_vanderouw.waves.view.fragments.AddBeachInfoFragment">
+              tools:context="com.dirusso.waves.view.fragments.AddBeachInfoFragment">
 
     <TextView
         android:id="@+id/add_info_beach_name"

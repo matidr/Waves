@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:background="@color/colorPrimary"
-              tools:context="com.dirusso_vanderouw.waves.view.fragments.SingleTabFilterFragment">
+              tools:context="com.dirusso.waves.view.fragments.SingleTabFilterFragment">
 
     <ListView
         android:id="@+id/attributes_listview"

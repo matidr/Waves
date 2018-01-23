@@ -4,12 +4,12 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'jacoco-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
     defaultConfig {
-        applicationId "com.dirusso_vanderouw.waves"
+        applicationId "com.dirusso.waves"
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -33,28 +33,31 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support'
+        exclude group: 'com.google.code.findbugs'
     })
     compile project(path: ':services')
-    dependencies { testCompile "org.mockito:mockito-core:1.+" }
-    compile 'com.android.support:appcompat-v7:25.3.0'
+    dependencies {
+        testCompile "org.mockito:mockito-core:2.10.0"
+    }
+    compile('com.airbnb.android:lottie:2.2.5') { exclude group: 'com.android.support' }
+    compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.github.toanvc:floatingactionmenu:0.8.9'
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:support-v4:25.0.1'
-    compile 'com.google.android.gms:play-services:10.2.0'
-    compile 'com.android.support:design:25.0.1'
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.github.Hitomis:CircleMenu:v1.0.2'
+    compile 'com.android.support:support-v4:27.0.2'
+    compile 'com.google.android.gms:play-services:11.8.0'
+    compile 'com.android.support:design:27.0.2'
+    compile 'com.google.guava:guava:22.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:27.0.2'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile 'com.google.dagger:dagger:2.7'
-    compile 'com.google.android.gms:play-services-maps:10.2.0'
+    compile 'com.google.android.gms:play-services-maps:11.8.0'
     testCompile 'junit:junit:4.12'
     apt 'com.google.dagger:dagger-compiler:2.7'
     provided 'javax.annotation:jsr250-api:1.0'
