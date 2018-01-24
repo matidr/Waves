@@ -1,6 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'jacoco-android'
 
 android {
@@ -36,12 +34,13 @@ dependencies {
         exclude group: 'com.android.support'
         exclude group: 'com.google.code.findbugs'
     })
-    compile project(path: ':services')
+    compile project(path: ':services', configuration: 'default')
     dependencies {
         testCompile "org.mockito:mockito-core:2.10.0"
     }
     compile('com.airbnb.android:lottie:2.2.5') { exclude group: 'com.android.support' }
     compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:mediarouter-v7:27.0.2'
     compile 'com.github.toanvc:floatingactionmenu:0.8.9'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:support-v4:27.0.2'
@@ -59,6 +58,6 @@ dependencies {
     compile 'com.google.dagger:dagger:2.7'
     compile 'com.google.android.gms:play-services-maps:11.8.0'
     testCompile 'junit:junit:4.12'
-    apt 'com.google.dagger:dagger-compiler:2.7'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.7'
     provided 'javax.annotation:jsr250-api:1.0'
 }
