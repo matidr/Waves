@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:fab="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+<com.mxn.soul.flowingdrawer_core.FlowingDrawer
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawerlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    app:edPosition="1"
+    app:edMenuSize="260dp"
+    app:edMenuBackground="@color/colorPrimary">
+
+    <!--content-->
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
     <FrameLayout
         android:id="@+id/map_fragment_container"
         android:layout_width="match_parent"
@@ -12,6 +25,7 @@
     </FrameLayout>
 
     <toan.android.floatingactionmenu.FloatingActionsMenu
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
         android:id="@+id/waves_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,5 +38,23 @@
         fab:fab_addButtonPlusIconColor="@color/icons"
         fab:fab_menuIcon="@drawable/waves"/>
 
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/view_toolbar"/>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+    <!--menu-->
+    <com.mxn.soul.flowingdrawer_core.FlowingMenuLayout
+        android:id="@+id/menulayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/id_container_menu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </com.mxn.soul.flowingdrawer_core.FlowingMenuLayout>
+
+</com.mxn.soul.flowingdrawer_core.FlowingDrawer>

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
@@ -27,8 +29,9 @@ import com.dirusso.waves.view.fragments.SingleTabFilterFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.mxn.soul.flowingdrawer_core.ElasticDrawer;
+import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,27 +48,60 @@ public class MainActivity extends BaseActivity implements MainInterface, MapFrag
 
     public static final String ATTRIBUTE_TYPE_LIST = "attributeTyepList";
     public static final String PROFILE_ID_SHARED_PREFS = "profileId";
-
+    @Inject
+    protected MainActivityPresenter mainActivityPresenter;
     private FloatingActionsMenu menuMultipleActions;
     private MapFragment mapFragment;
     private ListBeachFragment listBeachFragment;
     private FilterFragment filterFragment;
+    public OnClickListener filtersFABListener = v -> {
+        navigator.navigateToFragment(this, filterFragment, R.id.map_fragment_container);
+        if (menuMultipleActions != null) {
+            menuMultipleActions.collapseImmediately();
+        }
+    };
     private ProfileFragment profileFragment;
     private BeachViewProperties currentFragment;
     private ConfigurationFragment configurationFragment;
+    public OnClickListener settingsFABListener = v -> {
+        navigator.navigateToFragment(this, configurationFragment, R.id.map_fragment_container);
+        if (menuMultipleActions != null) {
+            menuMultipleActions.collapseImmediately();
+        }
+    };
     private boolean isButtonAdded;
-
     private FloatingActionButton addEventoButton;
-
+    private FlowingDrawer mDrawer;
     private List<Attribute.AttributeType> attributeTypes = Lists.newArrayList();
     private boolean isListSelected;
+    public OnClickListener listFABListener = v -> {
+        currentFragment = isListSelected ? mapFragment : listBeachFragment;
+        isListSelected = !isListSelected;
+        navigator.navigateToFragment(this, (BaseFragment) currentFragment, R.id.map_fragment_container);
+        if (menuMultipleActions != null) {
+            menuMultipleActions.collapseImmediately();
+        }
+    };
     private List<Profile> profiles = Lists.newArrayList();
+    public OnClickListener viewProfilesFABListener = v -> {
+        if (profileFragment == null) {
+            profileFragment = ProfileFragment.newInstance(profiles != null ? profiles : Lists.newArrayList());
+        }
+        navigator.navigateToFragment(this, profileFragment, R.id.map_fragment_container);
+        if (menuMultipleActions != null) {
+            menuMultipleActions.collapseImmediately();
+        }
+    };
     private List<Beach> beaches = Lists.newArrayList();
-
     private Beach currentBeach = null;
-
-    @Inject
-    protected MainActivityPresenter mainActivityPresenter;
+    public OnClickListener addEventFABListener = v -> {
+        if (menuMultipleActions != null) {
+            menuMultipleActions.collapseImmediately();
+        }
+        if (attributeTypes != null && !attributeTypes.isEmpty() && currentBeach != null) {
+            navigator.navigateToFragment(this, AddBeachInfoFragment.newInstance(attributeTypes, currentBeach), R.id.map_fragment_container);
+        }
+    };
 
     /**
      * At the time beach list is injected to test.
@@ -94,6 +130,8 @@ public class MainActivity extends BaseActivity implements MainInterface, MapFrag
         configurationFragment = new ConfigurationFragment();
         filterFragment = new FilterFragment();
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.waves_fab);
+        mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
+        mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
 
         addEventoButton = getFAB("addEvent", addEventFABListener, R.drawable.add);
         menuMultipleActions.addButton(addEventoButton);
@@ -103,6 +141,7 @@ public class MainActivity extends BaseActivity implements MainInterface, MapFrag
         menuMultipleActions.addButton(getFAB("filters", filtersFABListener, R.drawable.filter));
 
         currentFragment = mapFragment;
+        setupToolbar();
     }
 
     @Override
@@ -120,48 +159,28 @@ public class MainActivity extends BaseActivity implements MainInterface, MapFrag
         navigator.navigateToFragment(this, (BaseFragment) currentFragment, R.id.map_fragment_container);
     }
 
-    public OnClickListener addEventFABListener = v -> {
-        if (menuMultipleActions != null) {
-            menuMultipleActions.collapseImmediately();
-        }
-        if (attributeTypes != null && !attributeTypes.isEmpty() && currentBeach != null) {
-            navigator.navigateToFragment(this, AddBeachInfoFragment.newInstance(attributeTypes, currentBeach), R.id.map_fragment_container);
-        }
-    };
+    @Override
+    protected BasePresenter setupPresenter() {
+        return mainActivityPresenter;
+    }
 
-    public OnClickListener viewProfilesFABListener = v -> {
-        if (profileFragment == null) {
-            profileFragment = ProfileFragment.newInstance(profiles != null ? profiles : Lists.newArrayList());
-        }
-        navigator.navigateToFragment(this, profileFragment, R.id.map_fragment_container);
-        if (menuMultipleActions != null) {
-            menuMultipleActions.collapseImmediately();
-        }
-    };
+    @Override
+    protected BaseView getView() {
+        return this;
+    }
 
-    public OnClickListener settingsFABListener = v -> {
-        navigator.navigateToFragment(this, configurationFragment, R.id.map_fragment_container);
-        if (menuMultipleActions != null) {
-            menuMultipleActions.collapseImmediately();
-        }
-    };
+    protected void setupToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white);
 
-    public OnClickListener filtersFABListener = v -> {
-        navigator.navigateToFragment(this, filterFragment, R.id.map_fragment_container);
-        if (menuMultipleActions != null) {
-            menuMultipleActions.collapseImmediately();
-        }
-    };
-
-
-    public OnClickListener listFABListener = v -> {
-        currentFragment = isListSelected ? mapFragment : listBeachFragment;
-        isListSelected = !isListSelected;
-        navigator.navigateToFragment(this, (BaseFragment) currentFragment, R.id.map_fragment_container);
-        if (menuMultipleActions != null) {
-            menuMultipleActions.collapseImmediately();
-        }
-    };
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawer.toggleMenu();
+            }
+        });
+    }
 
     private FloatingActionButton getFAB(String tag, OnClickListener listener, int drawable) {
         FloatingActionButton fab = new FloatingActionButton(this);
@@ -176,19 +195,13 @@ public class MainActivity extends BaseActivity implements MainInterface, MapFrag
         if (menuMultipleActions.isExpanded()) {
             menuMultipleActions.collapse();
         }
+
+        if (mDrawer.isMenuVisible()) {
+            mDrawer.closeMenu();
+        }
+
         navigator.navigateToFragment(this, mapFragment, R.id.map_fragment_container);
     }
-
-    @Override
-    protected BasePresenter setupPresenter() {
-        return mainActivityPresenter;
-    }
-
-    @Override
-    protected BaseView getView() {
-        return this;
-    }
-
 
     @Override
     public void onPolygonClicked(Beach beach) {
@@ -196,16 +209,16 @@ public class MainActivity extends BaseActivity implements MainInterface, MapFrag
         navigateToDetails(beach);
     }
 
-    private void navigateToDetails(Beach beach) {
-        Intent intent = new Intent(MainActivity.this, BeachDetailsActivity.class);
-        intent.putExtra(BeachDetailsActivity.BEACH, beach);
-        navigator.navigateToActivity(this, intent);
-    }
-
     @Override
     public void onBeachUpdated(List<Beach> beaches) {
         this.beaches = beaches;
         showAddEventButton();
+    }
+
+    private void navigateToDetails(Beach beach) {
+        Intent intent = new Intent(MainActivity.this, BeachDetailsActivity.class);
+        intent.putExtra(BeachDetailsActivity.BEACH, beach);
+        navigator.navigateToActivity(this, intent);
     }
 
     @Override

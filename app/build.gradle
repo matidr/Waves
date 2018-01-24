@@ -39,6 +39,8 @@ dependencies {
         testCompile "org.mockito:mockito-core:2.10.0"
     }
     compile('com.airbnb.android:lottie:2.2.5') { exclude group: 'com.android.support' }
+    compile 'com.mxn.soul:flowingdrawer-core:2.0.0'
+    compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.android.support:mediarouter-v7:27.0.2'
     compile 'com.github.toanvc:floatingactionmenu:0.8.9'
