@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/menu_group_1">
         <item
+            android:id="@+id/menu_home"
+            android:icon="@drawable/home"
+            android:title="Home" />
+        <item
             android:id="@+id/menu_profiles"
             android:icon="@drawable/list"
             android:title="Profiles Info" />

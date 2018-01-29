@@ -47,6 +47,7 @@ public class MapFragmentPresenter extends BasePresenter<MapFragmentView> {
                           e.toString();
                           if (getView() != null) {
                               getView().hideProgress();
+                              getView().showError();
                           }
                       }
 
@@ -55,6 +56,7 @@ public class MapFragmentPresenter extends BasePresenter<MapFragmentView> {
                           if (getView() != null) {
                               getView().loadBeaches(beaches);
                               getView().hideProgress();
+                              getView().showSuccess();
                           }
                       }
                   });

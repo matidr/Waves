@@ -1,16 +1,24 @@
 package com.dirusso.waves.view.fragments;
 
 import android.Manifest;
-import android.app.ProgressDialog;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.AlarmManagerCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.dirusso.waves.R;
 import com.dirusso.waves.models.Attribute;
 import com.dirusso.waves.presenter.BasePresenter;
@@ -52,7 +60,10 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private Map<Polygon, Beach> polygonBeachMap;
     private List<Beach> beaches;
     private List<Attribute> attributes;
-    private ProgressDialog progress;
+    AlertDialog loaderDialog;
+    AlertDialog errorDialog;
+    AlertDialog successDialog;
+    AlertDialog.Builder dialogBuilder;
 
     @Inject
     protected MapFragmentPresenter presenter;
@@ -77,12 +88,6 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             afterMapReady();
         });
         mMapView.setOnClickListener(null);
-        progress = new ProgressDialog(getActivity());
-        if (progress != null) {
-            progress.setTitle("Loading");
-            progress.setMessage("Wait while getting beaches info...");
-            progress.setCancelable(false);
-        }
 
         return rootView;
     }
@@ -250,16 +255,71 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
     @Override
     public void showProgress() {
-        if (progress != null) {
-            progress.show();
-        }
+        dialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        View dialogView = inflater.inflate(R.layout.water_loader, null);
+        LottieAnimationView statusView = dialogView.findViewById(R.id.animation_view);
+        statusView.setAnimation("water_loader.json");
+        statusView.addColorFilterToLayer("NULL CONTROL", new PorterDuffColorFilter(Color.TRANSPARENT, PorterDuff.Mode
+                .SRC_ATOP));
+        statusView.loop(true);
+        statusView.playAnimation();
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setCancelable(false);
+        loaderDialog = dialogBuilder.create();
+        loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loaderDialog.show();
     }
 
     @Override
     public void hideProgress() {
-        if (progress != null) {
-            progress.hide();
-        }
+        loaderDialog.dismiss();
+    }
+
+    @Override
+    public void showSuccess() {
+        AlertDialog.Builder successDialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        View dialogView = inflater.inflate(R.layout.water_loader, null);
+        LottieAnimationView statusView = dialogView.findViewById(R.id.animation_view);
+        statusView.setAnimation("done_button.json");
+        statusView.addColorFilterToLayer("NULL CONTROL", new PorterDuffColorFilter(Color.TRANSPARENT, PorterDuff.Mode
+                .SRC_ATOP));
+        statusView.addAnimatorListener(new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+                successDialog.dismiss();
+            }
+        });
+        statusView.playAnimation();
+        successDialogBuilder.setView(dialogView);
+        successDialogBuilder.setCancelable(false);
+        successDialog = successDialogBuilder.create();
+        successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        successDialog.show();
+    }
+
+    @Override
+    public void showError() {
+        AlertDialog.Builder errorDialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.water_loader, null);
+        LottieAnimationView statusView = dialogView.findViewById(R.id.animation_view);
+        statusView.setAnimation("x_pop.json");
+        statusView.addColorFilterToLayer("NULL CONTROL", new PorterDuffColorFilter(Color.TRANSPARENT, PorterDuff.Mode
+                .SRC_ATOP));
+        statusView.addAnimatorListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                errorDialog.dismiss();
+            }
+        });
+        statusView.loop(false);
+        statusView.playAnimation();
+        errorDialogBuilder.setView(dialogView);
+        errorDialogBuilder.setCancelable(false);
+        errorDialog = errorDialogBuilder.create();
+        errorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        errorDialog.show();
     }
 
     public interface OnMapFragmentListener {

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.mxn.soul.flowingdrawer_core.FlowingDrawer
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawerlayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:edPosition="1"
-    app:edMenuBackground="@color/colorPrimary">
+    app:edMenuBackground="@color/colorPrimary"
+    app:edPosition="1">
 
     <!--content-->
     <RelativeLayout
@@ -15,39 +15,39 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/map_fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <FrameLayout
+            android:id="@+id/map_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </FrameLayout>
+        </FrameLayout>
 
-    <toan.android.floatingactionmenu.FloatingActionsMenu
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/waves_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        fab:fab_addButtonColorNormal="@color/colorPrimary"
-        fab:fab_addButtonColorPressed="@color/colorPrimaryDark"
-        fab:fab_addButtonPlusIconColor="@color/icons"
-        fab:fab_menuIcon="@drawable/waves"/>
+        <toan.android.floatingactionmenu.FloatingActionsMenu
+            android:id="@+id/waves_fab"
+            xmlns:fab="http://schemas.android.com/apk/res-auto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            fab:fab_addButtonColorNormal="@color/colorPrimary"
+            fab:fab_addButtonColorPressed="@color/colorPrimaryDark"
+            fab:fab_addButtonPlusIconColor="@color/icons"
+            fab:fab_menuIcon="@drawable/waves"/>
 
         <android.support.design.widget.FloatingActionButton
-            android:layout_marginBottom="10dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="10dp"
-            android:layout_alignParentLeft="true"
-            android:tint="@color/icons"
             android:id="@+id/fab_filter"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
             android:src="@drawable/filter"
+            android:tint="@color/icons"
             app:backgroundTint="@color/colorPrimary"
-            app:elevation="0dp" />
+            app:elevation="0dp"/>
 
         <include
             android:id="@+id/toolbar"

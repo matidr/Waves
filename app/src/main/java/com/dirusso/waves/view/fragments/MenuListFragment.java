@@ -36,13 +36,17 @@ public class MenuListFragment extends BaseFragment {
                 false);
         NavigationView vNavigation = view.findViewById(R.id.vNavigation);
         LottieAnimationView statusView = view.findViewById(R.id.animation_view);
-        statusView.setAnimation("wave.json");
+        statusView.setAnimation("blue_waves.json");
         statusView.addColorFilterToLayer("background", new PorterDuffColorFilter(view.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode
                 .SRC_ATOP));
         statusView.loop(true);
         statusView.playAnimation();
         vNavigation.setNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getTitle().toString()) {
+                case "Home":
+                    MapFragment mapFragment = new MapFragment();
+                    navigator.navigateToFragment((AppCompatActivity) getActivity(), mapFragment, R.id.map_fragment_container);
+                    break;
                 case "Settings":
                     ConfigurationFragment configurationFragment = new ConfigurationFragment();
                     navigator.navigateToFragment((AppCompatActivity) getActivity(), configurationFragment, R.id.map_fragment_container);

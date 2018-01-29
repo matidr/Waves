@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
@@ -29,7 +28,6 @@ import com.dirusso.waves.view.fragments.FiltersFragment;
 import com.dirusso.waves.view.fragments.ListBeachFragment;
 import com.dirusso.waves.view.fragments.MapFragment;
 import com.dirusso.waves.view.fragments.MenuListFragment;
-import com.dirusso.waves.view.fragments.ProfileFragment;
 import com.dirusso.waves.view.fragments.ProfileTabFilterFragment;
 import com.dirusso.waves.view.fragments.SingleTabFilterFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -72,7 +70,6 @@ public class MainActivity extends BaseActivity implements MainInterface, MapFrag
         }
     };
     private ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
-    private ProfileFragment profileFragment;
     private BeachViewProperties currentFragment;
     private ConfigurationFragment configurationFragment;
     private boolean isButtonAdded;

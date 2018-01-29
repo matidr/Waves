@@ -16,4 +16,8 @@ public interface MapFragmentView extends BaseView {
     void showProgress();
 
     void hideProgress();
+
+    void showSuccess();
+
+    void showError();
 }
