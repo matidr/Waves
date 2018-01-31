@@ -67,33 +67,25 @@ public class FiltersFragment extends AAH_FabulousFragment {
     public void setupDialog(Dialog dialog, int style) {
         View contentView = View.inflate(getContext(), R.layout.filter_view, null);
 
-        RelativeLayout rl_content = (RelativeLayout) contentView.findViewById(R.id.rl_content);
-        LinearLayout ll_buttons = (LinearLayout) contentView.findViewById(R.id.ll_buttons);
-        imgbtn_refresh = (ImageButton) contentView.findViewById(R.id.imgbtn_refresh);
-        imgbtn_apply = (ImageButton) contentView.findViewById(R.id.imgbtn_apply);
-        ViewPager vp_types = (ViewPager) contentView.findViewById(R.id.vp_types);
-        tabs_types = (TabLayout) contentView.findViewById(R.id.tabs_types);
+        RelativeLayout rl_content = contentView.findViewById(R.id.rl_content);
+        LinearLayout ll_buttons = contentView.findViewById(R.id.ll_buttons);
+        imgbtn_refresh = contentView.findViewById(R.id.imgbtn_refresh);
+        imgbtn_apply = contentView.findViewById(R.id.imgbtn_apply);
+        ViewPager vp_types = contentView.findViewById(R.id.vp_types);
+        tabs_types = contentView.findViewById(R.id.tabs_types);
 
-        imgbtn_apply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closeFilter(applied_filters);
+        imgbtn_apply.setOnClickListener(v -> closeFilter(applied_filters));
+        imgbtn_refresh.setOnClickListener(v -> {
+            for (TextView tv : textviews) {
+                tv.setTag("unselected");
+                tv.setBackgroundResource(R.drawable.chip_unselected);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_chips));
             }
-        });
-        imgbtn_refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (TextView tv : textviews) {
-                    tv.setTag("unselected");
-                    tv.setBackgroundResource(R.drawable.chip_unselected);
-                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_chips));
-                }
-                applied_filters.clear();
-            }
+            applied_filters.clear();
         });
 
         mAdapter = new SectionsPagerAdapter();
-        vp_types.setOffscreenPageLimit(4);
+        vp_types.setOffscreenPageLimit(2);
         vp_types.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
         tabs_types.setupWithViewPager(vp_types);
@@ -117,10 +109,8 @@ public class FiltersFragment extends AAH_FabulousFragment {
         public Object instantiateItem(ViewGroup collection, int position) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.view_filters_sorters, collection, false);
-            FlexboxLayout fbl = (FlexboxLayout) layout.findViewById(R.id.fbl);
-            //            LinearLayout ll_scroll = (LinearLayout) layout.findViewById(R.id.ll_scroll);
-            //            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (metrics.heightPixels-(104*metrics.density)));
-            //            ll_scroll.setLayoutParams(lp);
+            FlexboxLayout fbl = layout.findViewById(R.id.fbl);
+
             switch (position) {
                 case 0:
                     inflateLayoutWithFilters("attributes", fbl);
@@ -188,7 +178,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
                 } else {
                     tv.setTag("selected");
                     tv.setBackgroundResource(R.drawable.chip_selected);
-                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_header));
+                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
                     addToSelectedMap(filter_category, finalKeys.get(finalI));
                 }
             });
@@ -203,7 +193,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
             if (applied_filters != null && applied_filters.get(filter_category) != null && applied_filters.get(filter_category).contains(keys.get(finalI))) {
                 tv.setTag("selected");
                 tv.setBackgroundResource(R.drawable.chip_selected);
-                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_header));
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
             } else {
                 tv.setBackgroundResource(R.drawable.chip_unselected);
                 tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_chips));

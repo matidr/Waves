@@ -34,7 +34,7 @@
             fab:fab_addButtonColorNormal="@color/colorPrimary"
             fab:fab_addButtonColorPressed="@color/colorPrimaryDark"
             fab:fab_addButtonPlusIconColor="@color/icons"
-            fab:fab_menuIcon="@drawable/waves"/>
+            fab:fab_menuIcon="@drawable/add"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_filter"
