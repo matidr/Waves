@@ -50,7 +50,6 @@ public class MenuListFragment extends BaseFragment {
         vNavigation.setNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getTitle().toString()) {
                 case "Home":
-                    mapFragment.setProfiles(profiles);
                     navigator.navigateToFragment((AppCompatActivity) getActivity(), mapFragment, R.id.map_fragment_container);
                     break;
                 case "Settings":

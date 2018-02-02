@@ -36,7 +36,7 @@ import dirusso.services.models.Beach;
 import dirusso.services.models.Profile;
 
 public class MainActivity extends BaseActivity implements MainInterface, FilterFragment.OnGeneralFilerListener, AddBeachInfoFragment
-        .OnAddBeachInfoListener, ConfigurationFragment.OnConfigurationFragmentListener, MenuListFragment.NavigationDrawerInterface {
+        .OnAddBeachInfoListener, ConfigurationFragment.OnConfigurationFragmentListener, MenuListFragment.NavigationDrawerInterface, MapFragment.OnAttachInterface {
 
     public static final String ATTRIBUTE_TYPE_LIST = "attributeTyepList";
     public static final String PROFILE_ID_SHARED_PREFS = "profileId";
@@ -117,9 +117,9 @@ public class MainActivity extends BaseActivity implements MainInterface, FilterF
         if (menuListFragment == null) {
             menuListFragment = new MenuListFragment();
             menuListFragment.setNavigationDrawerListener(this);
-            menuListFragment.init(mapFragment, profiles);
             fm.beginTransaction().add(R.id.id_container_menu, menuListFragment).commit();
         }
+        menuListFragment.init(mapFragment, profiles);
     }
 
     @Override

@@ -80,13 +80,14 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private AddInfoFragment addInfoFragment;
     private android.support.design.widget.FloatingActionButton fabFilters;
     private android.support.design.widget.FloatingActionButton fabAddInfo;
-    private List<Profile> profiles = Lists.newArrayList();
-    private List<Beach> beaches = Lists.newArrayList();
+    private List<Profile> profiles;
+    private List<Beach> beaches;
     private ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
-    private List<Beach> allBeaches = Lists.newArrayList();
+    private List<Beach> allBeaches;
     private List<Attribute.AttributeType> attributeTypes;
     private Beach currentBeach;
     private boolean isButtonVisible;
+    private OnAttachInterface listener;
 
     public MapFragment() {
         // required empty constructor
@@ -161,6 +162,14 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             googleMap.clear();
         }
         presenter.getBeaches();
+        if (listener != null) {
+            if (profiles == null || profiles.isEmpty()) {
+                profiles = listener.getProfiles();
+            }
+            if (profiles == null || profiles.isEmpty()) {
+                attributeTypes = listener.getAttributes();
+            }
+        }
     }
 
     @Override
@@ -277,8 +286,27 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     }
 
     @Override
+    public void setBeaches(List<Beach> beachList) {
+        beaches = beachList;
+        if (beaches != null) {
+            if (polygonBeachMap != null) {
+                polygonBeachMap.clear();
+            }
+            if (mMapView != null && googleMap != null) {
+                afterMapReady();
+            }
+        }
+    }
+
+    @Override
+    public void filter(List<Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        listener = (OnAttachInterface) context;
     }
 
     @Override
@@ -301,26 +329,6 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         super.onLowMemory();
         mMapView.onLowMemory();
     }
-
-    @Override
-    public void setBeaches(List<Beach> beachList) {
-        beaches = beachList;
-        if (beaches != null) {
-            if (polygonBeachMap != null) {
-                polygonBeachMap.clear();
-            }
-            if (mMapView != null && googleMap != null) {
-                afterMapReady();
-            }
-        }
-    }
-
-
-    @Override
-    public void filter(List<Attribute> attributes) {
-        this.attributes = attributes;
-    }
-
 
     @Override
     public void loadBeaches(List<Beach> beachList) {
@@ -528,6 +536,12 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     @Override
     public void closeNavigationDrawer() {
 
+    }
+
+    public interface OnAttachInterface {
+        List<Profile> getProfiles();
+
+        List<Attribute.AttributeType> getAttributes();
     }
 }
 
