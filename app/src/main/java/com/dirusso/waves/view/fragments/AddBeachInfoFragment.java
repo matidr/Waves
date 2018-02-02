@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -30,17 +29,14 @@ import dirusso.services.models.Beach;
 public class AddBeachInfoFragment extends BaseFragment implements AddBeachInfoView {
     private static final String ATTRIBUTE_LIST = "attributeList";
     private static final String BEACH = "beach";
-
+    @Inject
+    protected AddBeachInfoPresenter presenter;
     private List<Attribute.AttributeType> attributeList;
     private ListView attributesLv;
     private TextView beachNameTv;
     private TextView confirmButton;
     private Beach beach;
-
     private OnAddBeachInfoListener listener;
-
-    @Inject
-    protected AddBeachInfoPresenter presenter;
 
     public AddBeachInfoFragment() {
         // Required empty public constructor
@@ -67,7 +63,7 @@ public class AddBeachInfoFragment extends BaseFragment implements AddBeachInfoVi
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
         attributesLv = (ListView) rootView.findViewById(R.id.add_info_attributes_listview);
@@ -81,12 +77,8 @@ public class AddBeachInfoFragment extends BaseFragment implements AddBeachInfoVi
             List<Attribute> resultList = Lists.newArrayList();
             for (int i = 0; i < attributesLv.getCount(); i++) {
                 View item = attributesLv.getChildAt(i);
-                CheckBox checkBox = (CheckBox) item.findViewById(R.id.filter_single_checkbox);
                 TextView nameTv = (TextView) item.findViewById(R.id.filter_single_name);
                 SeekBar seekBar = (SeekBar) item.findViewById(R.id.filter_single_seekbar);
-                if (checkBox.isChecked()) {
-                    resultList.add(Attribute.getAttribute(nameTv.getText().toString(), seekBar.getProgress()));
-                }
             }
             presenter.sendBeachInfo(beach, resultList);
             confirmButton.setEnabled(false);

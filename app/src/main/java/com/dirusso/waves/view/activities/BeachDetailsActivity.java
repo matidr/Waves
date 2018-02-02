@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dirusso.waves.R;
 import com.dirusso.waves.adapters.BeachDetailsAdapter;
@@ -29,6 +29,7 @@ import com.dirusso.waves.view.BaseView;
 import com.dirusso.waves.view.BeachDetailsView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.base.Strings;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import dirusso.services.models.Beach;
 
@@ -50,14 +51,25 @@ public class BeachDetailsActivity extends BaseActivity implements BeachDetailsVi
     private Button sharePhotoButton;
     private Beach currentBeach;
 
-    @Override
-    protected BasePresenter setupPresenter() {
-        return null;
-    }
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
 
-    @Override
-    protected BaseView getView() {
-        return this;
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 
     @Override
@@ -96,7 +108,7 @@ public class BeachDetailsActivity extends BaseActivity implements BeachDetailsVi
                     != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_ACCESS_WRITE_EXTERNAL);
 
             } else {
@@ -106,6 +118,16 @@ public class BeachDetailsActivity extends BaseActivity implements BeachDetailsVi
                 }
             }
         });
+    }
+
+    @Override
+    protected BasePresenter setupPresenter() {
+        return null;
+    }
+
+    @Override
+    protected BaseView getView() {
+        return this;
     }
 
     @Override
@@ -124,30 +146,14 @@ public class BeachDetailsActivity extends BaseActivity implements BeachDetailsVi
         }
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null)
-            return;
-
-        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
-        int totalHeight = 0;
-        View view = null;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            view = listAdapter.getView(i, view, listView);
-            if (i == 0)
-                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-            totalHeight += view.getMeasuredHeight();
-        }
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_WRITE_EXTERNAL: {
 
@@ -170,11 +176,6 @@ public class BeachDetailsActivity extends BaseActivity implements BeachDetailsVi
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
     private void startNavigationFromGoogleMaps() {
         LatLng currentLocation = MapDrawingUtils.getCurrentLocation(this);
         String originLocation = String.valueOf(currentLocation.latitude) + ", " + String.valueOf(currentLocation.longitude);
@@ -192,7 +193,11 @@ public class BeachDetailsActivity extends BaseActivity implements BeachDetailsVi
                 Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 startActivity(unrestrictedIntent);
             } catch (ActivityNotFoundException innerEx) {
-                Toast.makeText(this, "Please install a maps application", Toast.LENGTH_LONG).show();
+                new StyleableToast.Builder(this)
+                        .text("Please install a maps application")
+                        .textColor(Color.WHITE)
+                        .backgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
+                        .show();
             }
         }
     }

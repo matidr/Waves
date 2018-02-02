@@ -41,11 +41,13 @@ dependencies {
     compile('com.airbnb.android:lottie:2.2.5') { exclude group: 'com.android.support' }
     compile 'com.mxn.soul:flowingdrawer-core:2.0.0'
     compile 'com.allattentionhere:fabulousfilter:0.0.5'
-    compile ('com.google.android:flexbox:0.2.7'){
+    compile('com.google.android:flexbox:0.2.7') {
         exclude group: 'com.android.support'
     }
+    implementation 'com.muddzdev:styleabletoast:2.0.1'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.github.apl-devs:appintro:v4.2.2'
     compile 'com.android.support:mediarouter-v7:27.0.2'
     compile 'com.github.toanvc:floatingactionmenu:0.8.9'
     compile 'com.android.support:multidex:1.0.1'

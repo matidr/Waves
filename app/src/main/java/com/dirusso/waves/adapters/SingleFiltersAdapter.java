@@ -1,22 +1,22 @@
 package com.dirusso.waves.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dirusso.waves.R;
 import com.dirusso.waves.models.Attribute;
-import com.dirusso.waves.utils.ImageUtils;
-import com.squareup.picasso.Picasso;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.util.List;
+
+import static com.dirusso.waves.WavesApplication.getContext;
 
 /**
  * Created by Matias Di Russo on 6/10/2017.
@@ -24,9 +24,9 @@ import java.util.List;
 
 public class SingleFiltersAdapter extends BaseAdapter {
 
-    private Context context;
     private static LayoutInflater inflater = null;
     List<Attribute.AttributeType> attributes;
+    private Context context;
 
     public SingleFiltersAdapter(Context context, List<Attribute.AttributeType> attributes) {
         // TODO Auto-generated constructor stub
@@ -56,17 +56,27 @@ public class SingleFiltersAdapter extends BaseAdapter {
         Holder holder = new Holder();
         View rowView = inflater.inflate(R.layout.filter_single_item, null);
 
-        holder.checkBox = (CheckBox) rowView.findViewById(R.id.filter_single_checkbox);
-        holder.icon = (ImageView) rowView.findViewById(R.id.filter_single_icon);
-        holder.name = (TextView) rowView.findViewById(R.id.filter_single_name);
-        holder.seekBar = (SeekBar) rowView.findViewById(R.id.filter_single_seekbar);
-
-        holder.checkBox.setChecked(false);
+        holder.name = rowView.findViewById(R.id.filter_single_name);
+        holder.seekBar = rowView.findViewById(R.id.filter_single_seekbar);
+        holder.name.setOnClickListener(v -> {
+            if (holder.name.getTag() != null && holder.name.getTag().equals("selected")) {
+                holder.name.setTag("unselected");
+                holder.name.setBackgroundResource(R.drawable.chip_unselected);
+                holder.name.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                holder.seekBar.setEnabled(false);
+            } else {
+                holder.name.setTag("selected");
+                holder.name.setBackgroundResource(R.drawable.chip_selected);
+                holder.name.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                holder.seekBar.setEnabled(true);
+            }
+        });
         holder.seekBar.setEnabled(false);
         holder.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                showToastValue(progress, attributes.get(position).getName());
+                showToastValue(progress, attributes.get(position)
+                                                   .getName());
             }
 
             @Override
@@ -79,45 +89,29 @@ public class SingleFiltersAdapter extends BaseAdapter {
 
             }
         });
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            holder.icon.setEnabled(isChecked);
-            holder.name.setEnabled(isChecked);
-            holder.seekBar.setEnabled(isChecked);
-            if (isChecked) {
-                showToastValue(holder.seekBar.getProgress(), holder.name.getText().toString());
-            }
-        });
-        Picasso.with(context).load(ImageUtils.getAttributeTypeImage(attributes.get(position).getName())).into(holder.icon);
         holder.name.setText(attributes.get(position).getName());
 
         return rowView;
     }
 
-    private class Holder {
-        CheckBox checkBox;
-        ImageView icon;
-        TextView name;
-        SeekBar seekBar;
-    }
-
     private void showToastValue(int progress, String name) {
         switch (progress) {
             case 0:
-                if (name.equals("FLAG")) {
+                if (name.equalsIgnoreCase("FLAG")) {
                     getToast("GREEN");
                 } else {
                     getToast("LOW");
                 }
                 break;
             case 1:
-                if (name.equals("FLAG")) {
+                if (name.equalsIgnoreCase("FLAG")) {
                     getToast("YELLOW");
                 } else {
                     getToast("MEDIUM");
                 }
                 break;
             case 2:
-                if (name.equals("FLAG")) {
+                if (name.equalsIgnoreCase("FLAG")) {
                     getToast("RED");
                 } else {
                     getToast("HIGH");
@@ -127,7 +121,31 @@ public class SingleFiltersAdapter extends BaseAdapter {
     }
 
     private void getToast(String text) {
-        Toast.makeText(context, text,
-                Toast.LENGTH_SHORT).show();
+        if (text.equalsIgnoreCase("RED") || text.equalsIgnoreCase("HIGH")) {
+            new StyleableToast.Builder(context)
+                    .text(text)
+                    .textColor(Color.WHITE)
+                    .backgroundColor(Color.RED)
+                    .show();
+        }
+        if (text.equalsIgnoreCase("YELLOW") || text.equalsIgnoreCase("MEDIUM")) {
+            new StyleableToast.Builder(context)
+                    .text(text)
+                    .textColor(Color.WHITE)
+                    .backgroundColor(Color.YELLOW)
+                    .show();
+        }
+        if (text.equalsIgnoreCase("GREEN") || text.equalsIgnoreCase("LOW")) {
+            new StyleableToast.Builder(context)
+                    .text(text)
+                    .textColor(Color.WHITE)
+                    .backgroundColor(Color.GREEN)
+                    .show();
+        }
+    }
+
+    private class Holder {
+        TextView name;
+        SeekBar seekBar;
     }
 }

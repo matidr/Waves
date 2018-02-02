@@ -1,7 +1,9 @@
 package com.dirusso.waves.view.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import com.dirusso.waves.utils.SharedPreferencesUtils;
 import com.dirusso.waves.view.BaseView;
 import com.dirusso.waves.view.activities.MainActivity;
 import com.google.common.collect.Lists;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.io.Serializable;
 import java.util.List;
@@ -112,7 +115,11 @@ public class ProfileTabFilterFragment extends BaseFragment {
 
             removeFiltersButton.setOnClickListener(v -> listener.removeFilters());
         } else {
-            Toast.makeText(getActivity(), "No hay perfiles cargados", Toast.LENGTH_LONG).show();
+            new StyleableToast.Builder(getActivity())
+                    .text("No hay perfiles cargados")
+                    .textColor(Color.WHITE)
+                    .backgroundColor(ContextCompat.getColor(getActivity(), R.color.colorAccent))
+                    .show();
         }
         return rootView;
     }

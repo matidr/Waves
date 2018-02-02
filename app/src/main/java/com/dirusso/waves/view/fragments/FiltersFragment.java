@@ -1,6 +1,5 @@
 package com.dirusso.waves.view.fragments;
 
-import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,8 +17,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import com.dirusso.waves.R;
-import com.dirusso.waves.view.activities.MainActivity;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
     ImageButton imgbtn_refresh, imgbtn_apply;
     SectionsPagerAdapter mAdapter;
     private DisplayMetrics metrics;
-
+    private MapFragment mapFragment;
 
     public static FiltersFragment newInstance() {
         FiltersFragment filtersFragment = new FiltersFragment();
@@ -50,7 +50,8 @@ public class FiltersFragment extends AAH_FabulousFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        applied_filters = ((MainActivity) getActivity()).getApplied_filters();
+        mapFragment = (MapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map_fragment_container);
+        applied_filters = mapFragment.getApplied_filters();
         metrics = this.getResources().getDisplayMetrics();
 
         for (Map.Entry<String, List<String>> entry : applied_filters.entrySet()) {
@@ -92,10 +93,10 @@ public class FiltersFragment extends AAH_FabulousFragment {
 
 
         //params to set
-        setAnimationDuration(600); //optional; default 500ms
+        setAnimationDuration(300); //optional; default 500ms
         setPeekHeight(300); // optional; default 400dp
-        setCallbacks((Callbacks) getActivity()); //optional; to get back result
-        setAnimationListener((AnimationListener) getActivity()); //optional; to get animation callbacks
+        setCallbacks((Callbacks) mapFragment); //optional; to get back result
+        setAnimationListener((AnimationListener) mapFragment); //optional; to get animation callbacks
         setViewgroupStatic(ll_buttons); // optional; layout to stick at bottom on slide
         setViewPager(vp_types); //optional; if you use viewpager that has scrollview
         setViewMain(rl_content); //necessary; main bottomsheet view
@@ -103,7 +104,87 @@ public class FiltersFragment extends AAH_FabulousFragment {
         super.setupDialog(dialog, style); //call super at last
     }
 
+    private void inflateLayoutWithFilters(final String filter_category, FlexboxLayout fbl) {
+        List<String> keys = new ArrayList<>();
+        switch (filter_category) {
+            case "attributes":
+                keys = mapFragment.getAttributesForFilter();
+                break;
+            case "profiles":
+                keys = mapFragment.getProfilesForFilter();
+                break;
+        }
+
+        for (int i = 0; i < keys.size(); i++) {
+            View subchild = getActivity().getLayoutInflater().inflate(R.layout.single_chip, null);
+            final TextView tv = subchild.findViewById(R.id.txt_title);
+            tv.setText(keys.get(i));
+            final int finalI = i;
+            final List<String> finalKeys = keys;
+            tv.setOnClickListener(v -> {
+                if (tv.getTag() != null && tv.getTag().equals("selected")) {
+                    tv.setTag("unselected");
+                    tv.setBackgroundResource(R.drawable.chip_unselected);
+                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                    removeFromSelectedMap(filter_category, finalKeys.get(finalI));
+                } else {
+                    tv.setTag("selected");
+                    tv.setBackgroundResource(R.drawable.chip_selected);
+                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                    addToSelectedMap(filter_category, finalKeys.get(finalI));
+                }
+            });
+            try {
+                Log.d("k9res", "key: " + filter_category + " |val:" + keys.get(finalI));
+                Log.d("k9res", "applied_filters != null: " + (applied_filters != null));
+                Log.d("k9res", "applied_filters.get(key) != null: " + (applied_filters.get(filter_category) != null));
+                Log.d("k9res", "applied_filters.get(key).contains(keys.get(finalI)): " + (
+                        applied_filters.get(filter_category)
+                                       .contains(keys.get(finalI))));
+            } catch (Exception e) {
+
+            }
+            if (applied_filters != null && applied_filters.get(filter_category) != null && applied_filters.get(filter_category)
+                                                                                                          .contains(keys.get(finalI))) {
+                tv.setTag("selected");
+                tv.setBackgroundResource(R.drawable.chip_selected);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+            } else {
+                tv.setBackgroundResource(R.drawable.chip_unselected);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+            }
+            textviews.add(tv);
+
+            fbl.addView(subchild);
+        }
+
+
+    }
+
+    private void addToSelectedMap(String key, String value) {
+        if (applied_filters.get(key) != null && !applied_filters.get(key).contains(value)) {
+            applied_filters.get(key).add(value);
+        } else {
+            List<String> temp = new ArrayList<>();
+            temp.add(value);
+            applied_filters.put(key, temp);
+        }
+    }
+
+    private void removeFromSelectedMap(String key, String value) {
+        if (applied_filters.get(key).size() == 1) {
+            applied_filters.remove(key);
+        } else {
+            applied_filters.get(key).remove(value);
+        }
+    }
+
     public class SectionsPagerAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
 
         @Override
         public Object instantiateItem(ViewGroup collection, int position) {
@@ -130,8 +211,8 @@ public class FiltersFragment extends AAH_FabulousFragment {
         }
 
         @Override
-        public int getCount() {
-            return 2;
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
         }
 
         @Override
@@ -145,82 +226,5 @@ public class FiltersFragment extends AAH_FabulousFragment {
             return "";
         }
 
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-    }
-
-    private void inflateLayoutWithFilters(final String filter_category, FlexboxLayout fbl) {
-        List<String> keys = new ArrayList<>();
-        switch (filter_category) {
-            case "attributes":
-                keys = ((MainActivity) getActivity()).getAttributesForFilter();
-                break;
-            case "profiles":
-                keys = ((MainActivity) getActivity()).getProfilesForFilter();
-                break;
-        }
-
-        for (int i = 0; i < keys.size(); i++) {
-            View subchild = getActivity().getLayoutInflater().inflate(R.layout.single_chip, null);
-            final TextView tv = subchild.findViewById(R.id.txt_title);
-            tv.setText(keys.get(i));
-            final int finalI = i;
-            final List<String> finalKeys = keys;
-            tv.setOnClickListener(v -> {
-                if (tv.getTag() != null && tv.getTag().equals("selected")) {
-                    tv.setTag("unselected");
-                    tv.setBackgroundResource(R.drawable.chip_unselected);
-                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_chips));
-                    removeFromSelectedMap(filter_category, finalKeys.get(finalI));
-                } else {
-                    tv.setTag("selected");
-                    tv.setBackgroundResource(R.drawable.chip_selected);
-                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-                    addToSelectedMap(filter_category, finalKeys.get(finalI));
-                }
-            });
-            try {
-                Log.d("k9res", "key: " + filter_category + " |val:" + keys.get(finalI));
-                Log.d("k9res", "applied_filters != null: " + (applied_filters != null));
-                Log.d("k9res", "applied_filters.get(key) != null: " + (applied_filters.get(filter_category) != null));
-                Log.d("k9res", "applied_filters.get(key).contains(keys.get(finalI)): " + (applied_filters.get(filter_category).contains(keys.get(finalI))));
-            } catch (Exception e) {
-
-            }
-            if (applied_filters != null && applied_filters.get(filter_category) != null && applied_filters.get(filter_category).contains(keys.get(finalI))) {
-                tv.setTag("selected");
-                tv.setBackgroundResource(R.drawable.chip_selected);
-                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-            } else {
-                tv.setBackgroundResource(R.drawable.chip_unselected);
-                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_chips));
-            }
-            textviews.add(tv);
-
-            fbl.addView(subchild);
-        }
-
-
-    }
-
-    private void addToSelectedMap(String key, String value) {
-        if (applied_filters.get(key) != null && !applied_filters.get(key).contains(value)) {
-            applied_filters.get(key).add(value);
-        } else {
-            List<String> temp = new ArrayList<>();
-            temp.add(value);
-            applied_filters.put(key, temp);
-        }
-    }
-
-    private void removeFromSelectedMap(String key, String value) {
-        if (applied_filters.get(key).size() == 1) {
-            applied_filters.remove(key);
-        } else {
-            applied_filters.get(key).remove(value);
-        }
     }
 }

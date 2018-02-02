@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import dirusso.services.business.WavesRepository;
 import dirusso.services.models.AttributeValue;
 import dirusso.services.models.Beach;
-import dirusso.services.models.Profile;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -85,6 +84,34 @@ public class MapFragmentPresenter extends BasePresenter<MapFragmentView> {
 
     public Attribute getValueIdForAttribute(String type, int value) {
         return Attribute.getAttribute(type, value);
+    }
+
+    public void sendBeachInfo(Beach beach, List<Attribute> attributes) {
+        List<AttributeValue> attributeValues = Lists.newArrayList();
+        for (Attribute attribute : attributes) {
+            attributeValues.add(new AttributeValue(attribute.getType(), attribute.getValue()));
+        }
+
+        Beach newBeachData = new Beach.Builder(beach).withAttributes(attributeValues).build();
+        repository.reportDataFromBeach(String.valueOf(newBeachData.getBeachId()), newBeachData)
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(new Subscriber<List<Beach>>() {
+                      @Override
+                      public void onCompleted() {
+
+                      }
+
+                      @Override
+                      public void onError(Throwable e) {
+                          getView().showError();
+                      }
+
+                      @Override
+                      public void onNext(List<Beach> beaches) {
+                          getView().showSuccess();
+                      }
+                  });
     }
 
 }

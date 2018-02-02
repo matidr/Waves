@@ -12,12 +12,12 @@ import com.dirusso.waves.R;
 import com.dirusso.waves.models.Attribute;
 import com.dirusso.waves.utils.ImageUtils;
 import com.google.common.base.Joiner;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import dirusso.services.models.AttributeValue;
 import dirusso.services.models.Profile;
 
 /**
@@ -60,7 +60,9 @@ public class ProfileAdapter extends RecyclerView.Adapter {
         vh.name.setText(profile.getName());
         List<Attribute> attributesList = Lists.newArrayList();
         if (profile.getProfileAttributes() != null) {
-            FluentIterable.from(profile.getProfileAttributes()).transform(attributeValue -> Attribute.getAttribute(attributeValue.getAttribute(), attributeValue.getValue())).copyInto(attributesList);
+            for (AttributeValue attributeValue : profile.getProfileAttributes()) {
+                attributesList.add(Attribute.getAttribute(attributeValue.getAttribute(), attributeValue.getValue()));
+            }
             String attributes = Joiner.on("\n\n").join(attributesList);
             vh.attributeValues.setText(attributes);
         }
@@ -79,9 +81,9 @@ public class ProfileAdapter extends RecyclerView.Adapter {
 
         public ProfileViewHolder(View itemView) {
             super(itemView);
-            name = (TextView) itemView.findViewById(R.id.profile_item_name);
-            attributeValues = (TextView) itemView.findViewById(R.id.profile_item_attribute_description);
-            imageView = (ImageView) itemView.findViewById(R.id.profile_item_iv);
+            name = itemView.findViewById(R.id.profile_item_name);
+            attributeValues = itemView.findViewById(R.id.profile_item_attribute_description);
+            imageView = itemView.findViewById(R.id.profile_item_iv);
         }
     }
 }

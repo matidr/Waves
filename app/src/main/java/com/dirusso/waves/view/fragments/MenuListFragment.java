@@ -1,7 +1,5 @@
 package com.dirusso.waves.view.fragments;
 
-import com.airbnb.lottie.LottieAnimationView;
-
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
@@ -11,9 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.airbnb.lottie.LottieAnimationView;
 import com.dirusso.waves.R;
 import com.dirusso.waves.presenter.BasePresenter;
 import com.dirusso.waves.view.BaseView;
+
+import java.util.List;
+
+import dirusso.services.models.Profile;
 
 /**
  * Class for drawing the navigation drawer menu
@@ -23,6 +27,8 @@ import com.dirusso.waves.view.BaseView;
 public class MenuListFragment extends BaseFragment {
 
     NavigationDrawerInterface navigationDrawerListener;
+    MapFragment mapFragment;
+    List<Profile> profiles;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,15 +50,16 @@ public class MenuListFragment extends BaseFragment {
         vNavigation.setNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getTitle().toString()) {
                 case "Home":
-                    MapFragment mapFragment = new MapFragment();
+                    mapFragment.setProfiles(profiles);
                     navigator.navigateToFragment((AppCompatActivity) getActivity(), mapFragment, R.id.map_fragment_container);
                     break;
                 case "Settings":
                     ConfigurationFragment configurationFragment = new ConfigurationFragment();
+                    configurationFragment.setProfileList(profiles);
                     navigator.navigateToFragment((AppCompatActivity) getActivity(), configurationFragment, R.id.map_fragment_container);
                     break;
                 case "Profiles Info":
-                    ProfileFragment profileFragment = new ProfileFragment();
+                    ProfileFragment profileFragment = ProfileFragment.newInstance(profiles);
                     navigator.navigateToFragment((AppCompatActivity) getActivity(), profileFragment, R.id.map_fragment_container);
                     break;
                 case "About":
@@ -63,12 +70,8 @@ public class MenuListFragment extends BaseFragment {
                 navigationDrawerListener.closeNavigationDrawer();
             }
             return false;
-        }) ;
-        return  view ;
-    }
-
-    public void setNavigationDrawerListener(NavigationDrawerInterface navigationDrawerListener) {
-        this.navigationDrawerListener = navigationDrawerListener;
+        });
+        return view;
     }
 
     @Override
@@ -84,6 +87,15 @@ public class MenuListFragment extends BaseFragment {
     @Override
     protected int setupFragmentLayoutId() {
         return R.layout.navigation_drawer_fragment;
+    }
+
+    public void setNavigationDrawerListener(NavigationDrawerInterface navigationDrawerListener) {
+        this.navigationDrawerListener = navigationDrawerListener;
+    }
+
+    public void init(MapFragment mapFragment, List<Profile> profiles) {
+        this.mapFragment = mapFragment;
+        this.profiles = profiles;
     }
 
     public interface NavigationDrawerInterface {

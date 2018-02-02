@@ -133,8 +133,9 @@ public class MapDrawingUtils {
 
     public static boolean isPointInPolygon(LatLng location, List<LatitudeLongitude> vertices) {
         List<LatLng> latLngList = Lists.newArrayList();
-        FluentIterable.from(vertices).transform(latitudeLongitude -> new LatLng(latitudeLongitude.getLat(),
-                latitudeLongitude.getLon())).copyInto(latLngList);
+        for (LatitudeLongitude latitudeLongitude: vertices) {
+            latLngList.add(new LatLng(latitudeLongitude.getLat(), latitudeLongitude.getLon()));
+        }
         return isPointInPolygonLatLng(location, latLngList);
     }
 

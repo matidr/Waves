@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -11,14 +12,17 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.AlarmManagerCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import com.dirusso.waves.R;
 import com.dirusso.waves.models.Attribute;
 import com.dirusso.waves.presenter.BasePresenter;
@@ -27,6 +31,7 @@ import com.dirusso.waves.utils.MapDrawingUtils;
 import com.dirusso.waves.view.BaseView;
 import com.dirusso.waves.view.BeachViewProperties;
 import com.dirusso.waves.view.MapFragmentView;
+import com.dirusso.waves.view.activities.BeachDetailsActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -35,7 +40,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.common.collect.Lists;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,52 +52,136 @@ import javax.inject.Inject;
 
 import dirusso.services.models.AttributeValue;
 import dirusso.services.models.Beach;
+import dirusso.services.models.Profile;
 
 /**
  * Created by Matias Di Russo on 1/4/17.
  */
 
-public class MapFragment extends BaseFragment implements MapFragmentView, BeachViewProperties {
+public class MapFragment extends BaseFragment implements MapFragmentView, BeachViewProperties, MenuListFragment.NavigationDrawerInterface,
+        AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener {
 
     private static final LatLng DEFAULT_POSITION = new LatLng(-34.910340, -56.141932);
     private static final int DEFAULT_ZOOM = 16;
-
-    private MapView mMapView;
-    private GoogleMap googleMap;
-    private OnMapFragmentListener onMapFragmentListener;
-    private Map<Polygon, Beach> polygonBeachMap;
-    private List<Beach> beaches;
-    private List<Attribute> attributes;
+    private static final String ATTRIBUTES = "attributes";
+    private static final String BEACHES = "beaches";
+    private static final String PROFILES = "profiles";
+    @Inject
+    protected MapFragmentPresenter presenter;
     AlertDialog loaderDialog;
     AlertDialog errorDialog;
     AlertDialog successDialog;
     AlertDialog.Builder dialogBuilder;
+    private MapView mMapView;
+    private GoogleMap googleMap;
+    private Map<Polygon, Beach> polygonBeachMap;
+    private List<Attribute> attributes;
+    private FiltersFragment filtersFragment;
+    private AddInfoFragment addInfoFragment;
+    private android.support.design.widget.FloatingActionButton fabFilters;
+    private android.support.design.widget.FloatingActionButton fabAddInfo;
+    private List<Profile> profiles = Lists.newArrayList();
+    private List<Beach> beaches = Lists.newArrayList();
+    private ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
+    private List<Beach> allBeaches = Lists.newArrayList();
+    private List<Attribute.AttributeType> attributeTypes;
+    private Beach currentBeach;
+    private boolean isButtonVisible;
 
-    @Inject
-    protected MapFragmentPresenter presenter;
+    public MapFragment() {
+        // required empty constructor
+    }
+
+    public static MapFragment newInstance(List<Profile> profiles, List<Beach> beaches, List<Attribute.AttributeType> attributeTypes) {
+        Bundle args = new Bundle();
+        args.putSerializable(ATTRIBUTES, (Serializable) attributeTypes);
+        args.putSerializable(BEACHES, (Serializable) beaches);
+        args.putSerializable(PROFILES, (Serializable) profiles);
+        MapFragment fragment = new MapFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
         applicationComponent.inject(this);
+        if (getArguments() != null && getArguments().containsKey(ATTRIBUTES) && getArguments().containsKey(BEACHES)) {
+            attributeTypes = (List<Attribute.AttributeType>) getArguments().getSerializable(ATTRIBUTES);
+            beaches = (List<Beach>) getArguments().getSerializable(BEACHES);
+            allBeaches = beaches;
+            profiles = (List<Profile>) getArguments().getSerializable(PROFILES);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        mMapView = (MapView) rootView.findViewById(R.id.mapView);
+
+        mMapView = rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
+
+        fabFilters = rootView.findViewById(R.id.fab_filter);
+        filtersFragment = FiltersFragment.newInstance();
+        filtersFragment.setParentFab(fabFilters);
+        fabFilters.setOnClickListener(v -> filtersFragment.show(getActivity().getSupportFragmentManager(), filtersFragment.getTag()));
+
+        fabAddInfo = rootView.findViewById(R.id.fab_add);
+        addInfoFragment = AddInfoFragment.newInstance(attributeTypes, currentBeach);
+        addInfoFragment.setParentFab(fabAddInfo);
+        // TODO add when working with services
+        //fabAddInfo.setVisibility(View.GONE);
+        isButtonVisible = false;
+        fabAddInfo.setOnClickListener(v -> {
+            // TODO add when working with services
+            //if (attributeTypes != null && !attributeTypes.isEmpty() && currentBeach != null) {
+            addInfoFragment.show(getActivity().getSupportFragmentManager(), addInfoFragment.getTag());
+            //}
+        });
 
         MapsInitializer.initialize(getActivity().getApplicationContext());
         mMapView.getMapAsync(mMap -> {
             googleMap = mMap;
             setupFragmentPreferences();
             afterMapReady();
+            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            googleMap.getUiSettings().setMapToolbarEnabled(false);
         });
         mMapView.setOnClickListener(null);
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+        if (googleMap != null) {
+            googleMap.clear();
+        }
+        presenter.getBeaches();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    protected BasePresenter setupPresenter() {
+        return presenter;
+    }
+
+    @Override
+    protected BaseView getBaseView() {
+        return this;
+    }
+
+    @Override
+    protected int setupFragmentLayoutId() {
+        return R.layout.map_fragment;
     }
 
     private void drawBeach(final Beach beach) {
@@ -114,8 +206,6 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
                 addAttributeMarkers(beachAttributeList, polygon);
             }
-
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
             googleMap.addMarker(MapDrawingUtils.getPlaceMarkerBeach(beach)).showInfoWindow();
         });
     }
@@ -150,8 +240,31 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         }
     }
 
+    public List<String> getAttributesForFilter() {
+        List<String> attributes = new ArrayList<>();
+        for (Beach beach : beaches) {
+            if (beach.getAttibutesValuesList() != null) {
+                for (AttributeValue attributeValue : beach.getAttibutesValuesList()) {
+                    Attribute attribute = Attribute.getAttribute(attributeValue.getAttribute(), attributeValue.getValue());
+                    if (attribute != null) {
+                        attributes.add(attribute.getName());
+                    }
+                }
+            }
+        }
+        return attributes;
+    }
+
+    public List<String> getProfilesForFilter() {
+        List<String> profilesList = new ArrayList<>();
+        for (Profile profile : profiles) {
+            profilesList.add(profile.getName());
+        }
+        return profilesList;
+    }
+
     private void setupFragmentPreferences() {
-        googleMap.setOnPolygonClickListener(polygon1 -> onMapFragmentListener.onPolygonClicked(polygonBeachMap.get(polygon1)));
+        googleMap.setOnPolygonClickListener(polygon1 -> navigateToDetails(polygonBeachMap.get(polygon1)));
         //TODO Check for permissions enabled
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager
@@ -164,52 +277,29 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mMapView.onResume();
-        if (googleMap != null) {
-            googleMap.clear();
-        }
-        presenter.getBeaches();
+    public void onAttach(Context context) {
+        super.onAttach(context);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mMapView.onDestroy();
+        if (errorDialog != null) {
+            errorDialog.dismiss();
+        }
+        if (successDialog != null) {
+            successDialog.dismiss();
+        }
+        if (loaderDialog != null) {
+            loaderDialog.dismiss();
+        }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        onMapFragmentListener = (OnMapFragmentListener) context;
-    }
-
-    @Override
-    protected BasePresenter setupPresenter() {
-        return presenter;
-    }
-
-    @Override
-    protected BaseView getBaseView() {
-        return this;
-    }
-
-    @Override
-    protected int setupFragmentLayoutId() {
-        return R.layout.map_fragment;
     }
 
     @Override
@@ -241,22 +331,23 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             this.beaches = presenter.filterOnResume(beaches, attributes);
         }
         setBeaches(this.beaches);
-        onMapFragmentListener.onBeachUpdated(beachList != null ? beachList : Lists.newArrayList());
-    }
-
-    public void removeBeaches() {
-        attributes = Lists.newArrayList();
+        //TODO add when working with services
+        //showAddEventButton();
     }
 
     @Override
     public void onError(String message) {
-        Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
+        new StyleableToast.Builder(getActivity())
+                .text(message)
+                .textColor(Color.WHITE)
+                .backgroundColor(Color.RED)
+                .show();
     }
 
     @Override
     public void showProgress() {
         dialogBuilder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.water_loader, null);
         LottieAnimationView statusView = dialogView.findViewById(R.id.animation_view);
         statusView.setAnimation("water_loader.json");
@@ -279,17 +370,19 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     @Override
     public void showSuccess() {
         AlertDialog.Builder successDialogBuilder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.water_loader, null);
         LottieAnimationView statusView = dialogView.findViewById(R.id.animation_view);
         statusView.setAnimation("done_button.json");
         statusView.addColorFilterToLayer("NULL CONTROL", new PorterDuffColorFilter(Color.TRANSPARENT, PorterDuff.Mode
                 .SRC_ATOP));
         statusView.addAnimatorListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
+            @Override
+            public void onAnimationEnd(Animator animation) {
                 successDialog.dismiss();
             }
         });
+        statusView.loop(false);
         statusView.playAnimation();
         successDialogBuilder.setView(dialogView);
         successDialogBuilder.setCancelable(false);
@@ -322,16 +415,119 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         errorDialog.show();
     }
 
-    public interface OnMapFragmentListener {
+    public void setProfiles(List<Profile> profiles) {
+        this.profiles = profiles;
+    }
 
-        /**
-         * Polygon beach has been clicked
-         *
-         * @param beach
-         */
-        void onPolygonClicked(Beach beach);
+    public void removeFilter() {
+        attributes = Lists.newArrayList();
+    }
 
-        void onBeachUpdated(List<Beach> beaches);
+    //TODO add this to the onclick of the add button
+
+
+    private void showAddEventButton() {
+        boolean showAddButton = false;
+
+        LatLng currentLocation = MapDrawingUtils.getCurrentLocation(getActivity());
+        if (currentLocation != null) {
+            for (Beach beach : beaches) {
+                if (MapDrawingUtils.isPointInPolygon(currentLocation,
+                        Lists.newArrayList(beach.getLeftUp(), beach.getRightUp(), beach.getDownCoord(), beach.getUpCoord()))) {
+                    currentBeach = beach;
+                    showAddButton = true;
+                    break;
+                }
+            }
+        } else {
+            new StyleableToast.Builder(getActivity())
+                    .text("No es posibile determinar su ubicacion")
+                    .textColor(Color.WHITE)
+                    .backgroundColor(ContextCompat.getColor(getActivity(), R.color.colorAccent))
+                    .show();
+        }
+        if (showAddButton) {
+            if (!isButtonVisible) {
+                fabAddInfo.setVisibility(View.VISIBLE);
+                isButtonVisible = true;
+            }
+        } else {
+            if (isButtonVisible) {
+                fabAddInfo.setVisibility(View.GONE);
+                isButtonVisible = false;
+            }
+        }
+    }
+
+    @Override
+    public void onResult(Object result) {
+        Log.d("k9res", "onResult: " + result.toString());
+        if (result.toString().equalsIgnoreCase("swiped_down")) {
+            //do something or nothing
+        } else {
+            if (result != null) {
+                ArrayMap<String, List<String>> applied_filters = (ArrayMap<String, List<String>>) result;
+                if (applied_filters.size() != 0) {
+                    List<Attribute> attributesList = Lists.newArrayList();
+                    for (Map.Entry<String, List<String>> entry : applied_filters.entrySet()) {
+                        Log.d("k9res", "entry.key: " + entry.getKey());
+                        switch (entry.getKey()) {
+                            case "attributes":
+                                // get the list of attributes
+                                break;
+                            case "profiles":
+                                // get the list of profiles
+                                break;
+                        }
+                    }
+                    // call the filter with the list of attributes
+                    filter(attributesList);
+                } else {
+                    //remove filters
+                    removeFilter();
+                }
+            }
+            //handle result
+        }
+    }
+
+    public void sendBeachInfo(Beach beach, List<Attribute> attributes) {
+        presenter.sendBeachInfo(beach, attributes);
+    }
+
+    private void navigateToDetails(Beach beach) {
+        Intent intent = new Intent(getActivity(), BeachDetailsActivity.class);
+        intent.putExtra(BeachDetailsActivity.BEACH, beach);
+        navigator.navigateToActivity((AppCompatActivity) getActivity(), intent);
+    }
+
+    public ArrayMap<String, List<String>> getApplied_filters() {
+        return applied_filters;
+    }
+
+    @Override
+    public void onOpenAnimationStart() {
+        Log.d("aah_animation", "onOpenAnimationStart: ");
+    }
+
+    @Override
+    public void onOpenAnimationEnd() {
+        Log.d("aah_animation", "onOpenAnimationEnd: ");
+    }
+
+    @Override
+    public void onCloseAnimationStart() {
+        Log.d("aah_animation", "onCloseAnimationStart: ");
+    }
+
+    @Override
+    public void onCloseAnimationEnd() {
+        Log.d("aah_animation", "onCloseAnimationEnd: ");
+    }
+
+    @Override
+    public void closeNavigationDrawer() {
+
     }
 }
 

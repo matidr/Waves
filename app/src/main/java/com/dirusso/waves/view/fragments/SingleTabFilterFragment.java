@@ -64,12 +64,8 @@ public class SingleTabFilterFragment extends BaseFragment {
         applyFilterButton.setOnClickListener(v -> {
             for (int i = 0; i < attributesLv.getCount(); i++) {
                 View item = attributesLv.getChildAt(i);
-                CheckBox checkBox = (CheckBox) item.findViewById(R.id.filter_single_checkbox);
                 TextView nameTv = (TextView) item.findViewById(R.id.filter_single_name);
                 SeekBar seekBar = (SeekBar) item.findViewById(R.id.filter_single_seekbar);
-                if (checkBox.isChecked()) {
-                    resultList.add(Attribute.getAttribute(nameTv.getText().toString(), seekBar.getProgress()));
-                }
             }
             if (resultList != null) {
                 listener.filterItems(resultList);

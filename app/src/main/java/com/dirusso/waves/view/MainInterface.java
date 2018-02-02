@@ -2,7 +2,6 @@ package com.dirusso.waves.view;
 
 import java.util.List;
 
-import dirusso.services.models.Beach;
 import dirusso.services.models.Profile;
 
 /**
@@ -11,10 +10,6 @@ import dirusso.services.models.Profile;
 
 public interface MainInterface extends BaseView {
 
-    void loadBeaches(List<Beach> beaches);
-
     void loadProfiles(List<Profile> profiles);
-
-    void onError(String message);
 
 }
