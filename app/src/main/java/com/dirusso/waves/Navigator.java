@@ -44,18 +44,18 @@ public class Navigator {
         activity.getSupportFragmentManager().beginTransaction().replace(containerId, fragment).setTransition(transition).commit();
     }
 
-//    /**
-//     * Navigate to fragment
-//     *
-//     * @param activity
-//     * @param fragment
-//     * @param containerId
-//     */
-//    public void navigateToFragmentWithAnim(AppCompatActivity activity, Fragment fragment, int containerId) {
-//        activity.getSupportFragmentManager().beginTransaction()
-//                //.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down)
-//                .replace(containerId, fragment).commit();
-//    }
+    //    /**
+    //     * Navigate to fragment
+    //     *
+    //     * @param activity
+    //     * @param fragment
+    //     * @param containerId
+    //     */
+    //    public void navigateToFragmentWithAnim(AppCompatActivity activity, Fragment fragment, int containerId) {
+    //        activity.getSupportFragmentManager().beginTransaction()
+    //                //.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down)
+    //                .replace(containerId, fragment).commit();
+    //    }
 
     /**
      * Navigate to fragment

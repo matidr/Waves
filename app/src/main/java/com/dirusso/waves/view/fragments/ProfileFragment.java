@@ -46,7 +46,7 @@ public class ProfileFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
 
         View root = super.onCreateView(inflater, container, savedInstanceState);
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.profiles_recycler);

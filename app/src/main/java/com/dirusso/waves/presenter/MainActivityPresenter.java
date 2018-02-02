@@ -27,23 +27,23 @@ public class MainActivityPresenter extends BasePresenter<MainInterface> {
 
     public void getProfiles() {
         repository.getProfiles()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<List<Profile>>() {
-                    @Override
-                    public void onCompleted() {
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new Subscriber<List<Profile>>() {
+                      @Override
+                      public void onCompleted() {
 
-                    }
+                      }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.toString();
-                    }
+                      @Override
+                      public void onError(Throwable e) {
+                          e.toString();
+                      }
 
-                    @Override
-                    public void onNext(List<Profile> profiles) {
-                        getView().loadProfiles(profiles);
-                    }
-                });
+                      @Override
+                      public void onNext(List<Profile> profiles) {
+                          getView().loadProfiles(profiles);
+                      }
+                  });
     }
 }
