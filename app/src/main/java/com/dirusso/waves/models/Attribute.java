@@ -54,6 +54,15 @@ public enum Attribute implements AttributesInterface {
         return null;
     }
 
+    public static Attribute getAttribute(String name) {
+        for (Attribute attribute : values()) {
+            if (attribute.getName().equalsIgnoreCase(name)) {
+                return attribute;
+            }
+        }
+        return null;
+    }
+
     public int getValue() {
         return value;
     }
@@ -77,8 +86,8 @@ public enum Attribute implements AttributesInterface {
 
     public static class AttributeType implements Serializable {
 
-        private String name;
         public int drawable;
+        private String name;
 
         public AttributeType() {
         }

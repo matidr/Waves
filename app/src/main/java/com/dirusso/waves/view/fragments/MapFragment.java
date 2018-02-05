@@ -93,10 +93,9 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         // required empty constructor
     }
 
-    public static MapFragment newInstance(List<Profile> profiles, List<Beach> beaches, List<Attribute.AttributeType> attributeTypes) {
+    public static MapFragment newInstance(List<Profile> profiles, List<Attribute.AttributeType> attributeTypes) {
         Bundle args = new Bundle();
         args.putSerializable(ATTRIBUTES, (Serializable) attributeTypes);
-        args.putSerializable(BEACHES, (Serializable) beaches);
         args.putSerializable(PROFILES, (Serializable) profiles);
         MapFragment fragment = new MapFragment();
         fragment.setArguments(args);
@@ -107,10 +106,8 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
         applicationComponent.inject(this);
-        if (getArguments() != null && getArguments().containsKey(ATTRIBUTES) && getArguments().containsKey(BEACHES)) {
+        if (getArguments() != null && getArguments().containsKey(ATTRIBUTES) && getArguments().containsKey(PROFILES)) {
             attributeTypes = (List<Attribute.AttributeType>) getArguments().getSerializable(ATTRIBUTES);
-            beaches = (List<Beach>) getArguments().getSerializable(BEACHES);
-            allBeaches = beaches;
             profiles = (List<Profile>) getArguments().getSerializable(PROFILES);
         }
     }
@@ -251,7 +248,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
     public List<String> getAttributesForFilter() {
         List<String> attributes = new ArrayList<>();
-        for (Beach beach : beaches) {
+        for (Beach beach : allBeaches) {
             if (beach.getAttibutesValuesList() != null) {
                 for (AttributeValue attributeValue : beach.getAttibutesValuesList()) {
                     Attribute attribute = Attribute.getAttribute(attributeValue.getAttribute(), attributeValue.getValue());
@@ -301,6 +298,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     @Override
     public void filter(List<Attribute> attributes) {
         this.attributes = attributes;
+        loadBeaches(allBeaches);
     }
 
     @Override
@@ -332,11 +330,12 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
     @Override
     public void loadBeaches(List<Beach> beachList) {
-        this.beaches = beachList;
+        this.allBeaches = beachList;
         if (attributes == null || attributes.isEmpty()) {
             attributes = Lists.newArrayList();
+            this.beaches = allBeaches;
         } else {
-            this.beaches = presenter.filterOnResume(beaches, attributes);
+            this.beaches = presenter.filterOnResume(allBeaches, attributes);
         }
         setBeaches(this.beaches);
         //TODO add when working with services
@@ -482,9 +481,27 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
                         switch (entry.getKey()) {
                             case "attributes":
                                 // get the list of attributes
+                                List<String> attributesStrings = entry.getValue();
+                                for (String attributeString : attributesStrings) {
+                                    if (Attribute.getAttribute(attributeString) != null) {
+                                        attributesList.add(Attribute.getAttribute(attributeString));
+                                    }
+                                }
                                 break;
                             case "profiles":
                                 // get the list of profiles
+                                List<String> profilesStrings = entry.getValue();
+                                for (String profileString : profilesStrings) {
+                                    for (Profile profile : profiles) {
+                                        if (profileString.equalsIgnoreCase(profile.getName())) {
+                                            for (AttributeValue value : profile.getProfileAttributes()) {
+                                                if (value != null && value.getAttribute() != null) {
+                                                    attributesList.add(Attribute.getAttribute(value.getAttribute(), value.getValue()));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                                 break;
                         }
                     }

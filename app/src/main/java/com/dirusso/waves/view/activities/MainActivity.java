@@ -48,7 +48,6 @@ public class MainActivity extends BaseActivity implements MainInterface, FilterF
     private FlowingDrawer mDrawer;
     private List<Attribute.AttributeType> attributeTypes = Lists.newArrayList();
     private List<Profile> profiles = Lists.newArrayList();
-    private List<Beach> beaches = Lists.newArrayList();
 
     /**
      * At the time beach list is injected to test.
@@ -75,7 +74,7 @@ public class MainActivity extends BaseActivity implements MainInterface, FilterF
         if (getIntent() != null && getIntent().hasExtra(ATTRIBUTE_TYPE_LIST)) {
             attributeTypes = (List<Attribute.AttributeType>) getIntent().getSerializableExtra(ATTRIBUTE_TYPE_LIST);
         }
-        mapFragment = MapFragment.newInstance(profiles, beaches, attributeTypes);
+        mapFragment = MapFragment.newInstance(profiles, attributeTypes);
         mDrawer = findViewById(R.id.drawerlayout);
         mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
 
