@@ -42,7 +42,7 @@ public class IntroActivity extends AppIntro {
                 " of the screen to open the menu and easy navigate through the app");
         sliderPage1.setImageDrawable(R.drawable.intro1);
         sliderPage1.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
-        sliderPage1.setDescColor(ContextCompat.getColor(this, R.color.colorAccent));
+        sliderPage1.setDescColor(ContextCompat.getColor(this, R.color.icons));
         addSlide(AppIntroFragment.newInstance(sliderPage1));
 
         // Second slide
@@ -53,7 +53,7 @@ public class IntroActivity extends AppIntro {
                 "attribute you want to add and then move the slider to select the value (low, medium, high)");
         sliderPage2.setImageDrawable(R.drawable.intro2);
         sliderPage2.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
-        sliderPage2.setDescColor(ContextCompat.getColor(this, R.color.colorAccent));
+        sliderPage2.setDescColor(ContextCompat.getColor(this, R.color.icons));
         addSlide(AppIntroFragment.newInstance(sliderPage2));
 
         //Third Slide
@@ -65,7 +65,7 @@ public class IntroActivity extends AppIntro {
                 "some defined attributes of interest for the profile");
         sliderPage3.setImageDrawable(R.drawable.intro3);
         sliderPage3.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
-        sliderPage3.setDescColor(ContextCompat.getColor(this, R.color.colorAccent));
+        sliderPage3.setDescColor(ContextCompat.getColor(this, R.color.icons));
         addSlide(AppIntroFragment.newInstance(sliderPage3));
 
         //Fourth Slide
@@ -76,7 +76,7 @@ public class IntroActivity extends AppIntro {
                 "and an info view will pop up of it so you can know it.");
         sliderPage4.setImageDrawable(R.drawable.intro4);
         sliderPage4.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
-        sliderPage4.setDescColor(ContextCompat.getColor(this, R.color.colorAccent));
+        sliderPage4.setDescColor(ContextCompat.getColor(this, R.color.icons));
         addSlide(AppIntroFragment.newInstance(sliderPage4));
 
         // OPTIONAL METHODS

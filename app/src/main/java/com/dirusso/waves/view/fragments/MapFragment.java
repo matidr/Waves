@@ -37,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.common.collect.Lists;
@@ -141,6 +142,8 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         MapsInitializer.initialize(getActivity().getApplicationContext());
         mMapView.getMapAsync(mMap -> {
             googleMap = mMap;
+            MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(getActivity().getApplicationContext(), R.raw.style_json3);
+            googleMap.setMapStyle(style);
             setupFragmentPreferences();
             afterMapReady();
             googleMap.getUiSettings().setMyLocationButtonEnabled(true);

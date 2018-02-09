@@ -80,7 +80,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
             for (TextView tv : textviews) {
                 tv.setTag("unselected");
                 tv.setBackgroundResource(R.drawable.chip_unselected);
-                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_chips));
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
             }
             applied_filters.clear();
         });
