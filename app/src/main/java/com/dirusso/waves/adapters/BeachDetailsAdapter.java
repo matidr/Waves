@@ -54,13 +54,10 @@ public class BeachDetailsAdapter extends BaseAdapter {
         BeachDetailsAdapter.Holder holder = new BeachDetailsAdapter.Holder();
         View rowView = inflater.inflate(R.layout.beach_detail_item, null);
 
-        holder.icon = (ImageView) rowView.findViewById(R.id.beach_detail_attribute_icon);
         holder.name = (TextView) rowView.findViewById(R.id.beach_detail_attribute_name);
         holder.seekBar = (SeekBar) rowView.findViewById(R.id.beach_detail_attribute_seekbar);
-        holder.value = (TextView) rowView.findViewById(R.id.beach_detail_attribute_value);
 
         holder.seekBar.setOnTouchListener((view, motionEvent) -> true);
-        Picasso.with(context).load(ImageUtils.getAttributeTypeImage(attributesValues.get(position).getAttribute())).into(holder.icon);
         holder.name.setText(attributesValues.get(position).getAttribute());
         holder.seekBar.setProgress(attributesValues.get(position).getValue());
 
@@ -68,9 +65,7 @@ public class BeachDetailsAdapter extends BaseAdapter {
     }
 
     private class Holder {
-        ImageView icon;
         TextView name;
         SeekBar seekBar;
-        TextView value;
     }
 }

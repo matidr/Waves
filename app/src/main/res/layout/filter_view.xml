@@ -4,6 +4,7 @@
                                                     xmlns:tools="http://schemas.android.com/tools"
                                                     android:layout_width="match_parent"
                                                     android:layout_height="match_parent"
+                                                    android:backgroundTint="@color/colorAccent"
                                                     android:orientation="vertical">
 
     <RelativeLayout
@@ -11,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorAccent"
         android:visibility="invisible"
         tools:ignore="MissingPrefix"
         tools:visibility="visible">
@@ -20,7 +21,7 @@
             android:id="@+id/tabs_types"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorAccent"
             app:tabGravity="center"
             app:tabIndicatorColor="@android:color/white"
             app:tabIndicatorHeight="2dp"
@@ -30,7 +31,7 @@
             app:tabPaddingStart="0dp"
             app:tabPaddingTop="0dp"
             app:tabSelectedTextColor="@android:color/white"
-            app:tabTextColor="@android:color/darker_gray"/>
+            app:tabTextColor="@color/colorPrimary"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/vp_types"
@@ -56,7 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/states_fab_button"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorPrimary"
                 android:src="@drawable/refresh"
                 android:tint="@android:color/white"/>
 
@@ -66,7 +67,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/states_fab_button"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorPrimary"
                 android:src="@drawable/done"
                 android:tint="@android:color/white"/>
 

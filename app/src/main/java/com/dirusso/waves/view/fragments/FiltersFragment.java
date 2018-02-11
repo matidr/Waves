@@ -1,6 +1,7 @@
 package com.dirusso.waves.view.fragments;
 
 import android.app.Dialog;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -69,6 +70,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
         View contentView = View.inflate(getContext(), R.layout.filter_view, null);
 
         RelativeLayout rl_content = contentView.findViewById(R.id.rl_content);
+        rl_content.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorAccent));
         LinearLayout ll_buttons = contentView.findViewById(R.id.ll_buttons);
         imgbtn_refresh = contentView.findViewById(R.id.imgbtn_refresh);
         imgbtn_apply = contentView.findViewById(R.id.imgbtn_apply);
@@ -80,7 +82,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
             for (TextView tv : textviews) {
                 tv.setTag("unselected");
                 tv.setBackgroundResource(R.drawable.chip_unselected);
-                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
             }
             applied_filters.clear();
         });
@@ -125,12 +127,14 @@ public class FiltersFragment extends AAH_FabulousFragment {
                 if (tv.getTag() != null && tv.getTag().equals("selected")) {
                     tv.setTag("unselected");
                     tv.setBackgroundResource(R.drawable.chip_unselected);
-                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                    tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
                     removeFromSelectedMap(filter_category, finalKeys.get(finalI));
                 } else {
                     tv.setTag("selected");
                     tv.setBackgroundResource(R.drawable.chip_selected);
-                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                    tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                     addToSelectedMap(filter_category, finalKeys.get(finalI));
                 }
             });
@@ -148,10 +152,12 @@ public class FiltersFragment extends AAH_FabulousFragment {
                                                                                                           .contains(keys.get(finalI))) {
                 tv.setTag("selected");
                 tv.setBackgroundResource(R.drawable.chip_selected);
-                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             } else {
                 tv.setBackgroundResource(R.drawable.chip_unselected);
-                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
             }
             textviews.add(tv);
 

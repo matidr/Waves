@@ -62,13 +62,16 @@ public class SingleFiltersAdapter extends BaseAdapter {
             if (holder.name.getTag() != null && holder.name.getTag().equals("selected")) {
                 holder.name.setTag("unselected");
                 holder.name.setBackgroundResource(R.drawable.chip_unselected);
-                holder.name.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                holder.name.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
                 holder.seekBar.setEnabled(false);
             } else {
                 holder.name.setTag("selected");
                 holder.name.setBackgroundResource(R.drawable.chip_selected);
-                holder.name.setTextColor(ContextCompat.getColor(getContext(), R.color.icons));
+                holder.name.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                 holder.seekBar.setEnabled(true);
+                if (holder.name.getText().toString().equalsIgnoreCase("JELLYFISH")) {
+                    showToastValue(2, "JELLYFISH");
+                }
             }
         });
         holder.seekBar.setEnabled(false);
@@ -89,6 +92,9 @@ public class SingleFiltersAdapter extends BaseAdapter {
 
             }
         });
+        if (holder.name.getText().toString().equalsIgnoreCase("JELLYFISH")) {
+            holder.seekBar.setVisibility(View.GONE);
+        }
         holder.name.setText(attributes.get(position).getName());
 
         return rowView;
@@ -113,6 +119,8 @@ public class SingleFiltersAdapter extends BaseAdapter {
             case 2:
                 if (name.equalsIgnoreCase("FLAG")) {
                     getToast("RED");
+                } else if (name.equalsIgnoreCase("JELLYFISH")) {
+                    getToast("JELLYFISH");
                 } else {
                     getToast("HIGH");
                 }

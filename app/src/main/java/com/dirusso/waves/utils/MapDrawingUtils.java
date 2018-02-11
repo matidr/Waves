@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import com.dirusso.waves.models.Attribute;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -89,6 +90,12 @@ public class MapDrawingUtils {
                 .icon(icon);
 
         return markerOptions;
+    }
+
+    public static GroundOverlayOptions createMarker2(Attribute attribute, LatLng position) {
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(attribute.getDrawable());
+        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions().image(icon).position(position, 100);
+        return groundOverlayOptions;
     }
 
     private static LatLng getPolygonCenterPoint(LatLng... polygonPointsList) {

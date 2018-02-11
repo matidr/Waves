@@ -38,6 +38,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.common.collect.Lists;
@@ -89,6 +90,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private Beach currentBeach;
     private boolean isButtonVisible;
     private OnAttachInterface listener;
+    private List<Marker> markers;
 
     public MapFragment() {
         // required empty constructor
@@ -111,6 +113,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             attributeTypes = (List<Attribute.AttributeType>) getArguments().getSerializable(ATTRIBUTES);
             profiles = (List<Profile>) getArguments().getSerializable(PROFILES);
         }
+        markers = Lists.newArrayList();
     }
 
     @Override
@@ -142,7 +145,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         MapsInitializer.initialize(getActivity().getApplicationContext());
         mMapView.getMapAsync(mMap -> {
             googleMap = mMap;
-            MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(getActivity().getApplicationContext(), R.raw.style_json3);
+            MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(getActivity().getApplicationContext(), R.raw.style_json);
             googleMap.setMapStyle(style);
             setupFragmentPreferences();
             afterMapReady();
@@ -196,6 +199,12 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private void drawBeach(final Beach beach) {
         mMapView.getMapAsync(map -> {
             googleMap = map;
+            googleMap.setOnCameraMoveListener(() -> {
+                boolean showMarker = googleMap.getCameraPosition().zoom > 14 ? true : false;
+                for (Marker marker : markers) {
+                    marker.setVisible(showMarker);
+                }
+            });
             PolygonOptions polygonOptions = MapDrawingUtils.drawPolygon(R.color
                             .cast_libraries_material_featurehighlight_outer_highlight_default_color,
                     R.color.cast_libraries_material_featurehighlight_outer_highlight_default_color,
@@ -222,8 +231,9 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private void addAttributeMarkers(List<Attribute> attributes, Polygon beachPolygon) {
         List<LatLng> possibleCoordinatesForAttributes = MapDrawingUtils.getListOfPossibleCoordinatesForAttributes(beachPolygon.getPoints());
         for (int i = 0; i < possibleCoordinatesForAttributes.size() && i < attributes.size(); i++) {
-            googleMap.addMarker(MapDrawingUtils.createMarker(attributes.get(i),
+            Marker marker = googleMap.addMarker(MapDrawingUtils.createMarker(attributes.get(i),
                     possibleCoordinatesForAttributes.get(i)));
+            markers.add(marker);
         }
     }
 
@@ -360,9 +370,13 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.water_loader, null);
         LottieAnimationView statusView = dialogView.findViewById(R.id.animation_view);
-        statusView.setAnimation("water_loader.json");
-        statusView.addColorFilterToLayer("NULL CONTROL", new PorterDuffColorFilter(Color.TRANSPARENT, PorterDuff.Mode
-                .SRC_ATOP));
+        statusView.setAnimation("loading.json");
+        statusView.addColorFilterToLayer("Capa de formas 4", new PorterDuffColorFilter(Color.WHITE,
+                PorterDuff.Mode.SRC_ATOP));
+        statusView.addColorFilterToLayer("Capa de formas 3", new PorterDuffColorFilter(Color.WHITE,
+                PorterDuff.Mode.SRC_ATOP));
+        statusView.addColorFilterToLayer("Capa de formas 5", new PorterDuffColorFilter(Color.WHITE,
+                PorterDuff.Mode.SRC_ATOP));
         statusView.loop(true);
         statusView.playAnimation();
         dialogBuilder.setView(dialogView);

@@ -31,21 +31,21 @@ public class WavesApiClientImpl implements WavesRepository {
 
     @Override
     public Observable<List<Profile>> getProfiles() {
-                List<Profile> profiles = Lists.newArrayList();
+        List<Profile> profiles = Lists.newArrayList();
 
-                Profile profile1 = new Profile.Builder()
-                        .withProfileAttributes(Lists.newArrayList(new AttributeValue("FLAG", 2), new AttributeValue("WAVES", 2)))
-                        .withProfileId(0)
-                        .withName("Surfer").build();
-                Profile profile2 = new Profile.Builder()
-                        .withProfileAttributes(Lists.newArrayList(new AttributeValue("FLAG", 0), new AttributeValue("WIND", 0),
-                                new AttributeValue("GARBAGE", 0)))
-                        .withProfileId(1)
-                        .withName("Family").build();
+        Profile profile1 = new Profile.Builder()
+                .withProfileAttributes(Lists.newArrayList(new AttributeValue("FLAG", 2), new AttributeValue("WAVES", 2)))
+                .withProfileId(0)
+                .withName("Surfer").build();
+        Profile profile2 = new Profile.Builder()
+                .withProfileAttributes(Lists.newArrayList(new AttributeValue("FLAG", 0), new AttributeValue("WIND", 0),
+                        new AttributeValue("WATER", 0)))
+                .withProfileId(1)
+                .withName("Family").build();
 
-                profiles.add(profile1);
-                profiles.add(profile2);
-                return Observable.just(profiles);
+        profiles.add(profile1);
+        profiles.add(profile2);
+        return Observable.just(profiles);
         //return WavesRestClient.getProfiles().map(responseProfiles -> responseProfiles);
     }
 
@@ -60,8 +60,9 @@ public class WavesApiClientImpl implements WavesRepository {
         Beach beach = new Beach.Builder(upLeft, upRight, downLeft, downRight).withId(1234)
                                                                              .withName("Playa Pocitos KIBON")
                                                                              .withAttributes(Lists.newArrayList(new AttributeValue("FLAG", 2), new
-                                                                                             AttributeValue("WIND", 0),
-                                                                                     new AttributeValue("GARBAGE", 1)))
+                                                                                             AttributeValue("WIND", 2),
+                                                                                     new AttributeValue("WATER", 2), new AttributeValue("WAVES",
+                                                                                             2), new AttributeValue("JELLYFISH", 2)))
                                                                              .withDescription("La playa de pocitos es una hermosa playa para " +
                                                                                      "relajarse que no se ajusta a deportes acuaticos")
                                                                              .build();
@@ -73,8 +74,8 @@ public class WavesApiClientImpl implements WavesRepository {
 
     @Override
     public Observable<List<Beach>> reportDataFromBeach(String beachId, Beach beach) {
-                String beachJson = new Gson().toJson(beach);
-                return Observable.just(Lists.newArrayList());
+        String beachJson = new Gson().toJson(beach);
+        return Observable.just(Lists.newArrayList());
         //return WavesRestClient.reportDataFromBeach(beachId, beach).map(responseBeachList -> responseBeachList);
     }
 
@@ -82,7 +83,8 @@ public class WavesApiClientImpl implements WavesRepository {
     public Observable<List<ResponseGetAllAttribute>> getAttributeList() {
 
         List<ResponseGetAllAttribute> attributesResponse = Lists.newArrayList(
-                new ResponseGetAllAttribute("WAVES"), new ResponseGetAllAttribute("FLAG"), new ResponseGetAllAttribute("WIND"));
+                new ResponseGetAllAttribute("WAVES"), new ResponseGetAllAttribute("FLAG"), new ResponseGetAllAttribute("WIND"), new
+                        ResponseGetAllAttribute("WATER"), new ResponseGetAllAttribute("JELLYFISH"));
         return Observable.just(attributesResponse);
 
         //return WavesRestClient.getAttributeList().map(responseAttributeList -> responseAttributeList);

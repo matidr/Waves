@@ -2,6 +2,7 @@
 <com.allattentionhere.fabulousfilter.AAH_FilterView xmlns:android="http://schemas.android.com/apk/res/android"
                                                     xmlns:tools="http://schemas.android.com/tools"
                                                     android:layout_width="match_parent"
+                                                    android:backgroundTint="@color/colorAccent"
                                                     android:layout_height="match_parent"
                                                     android:orientation="vertical">
 
@@ -10,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorAccent"
         android:visibility="invisible"
         tools:ignore="MissingPrefix"
         tools:visibility="visible">
@@ -35,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/states_fab_button"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorPrimary"
                 android:src="@drawable/done"
                 android:tint="@android:color/white"/>
 

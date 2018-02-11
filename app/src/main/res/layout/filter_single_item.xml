@@ -12,10 +12,11 @@
         android:layout_margin="8dp"
         android:background="@drawable/chip_unselected"
         android:clickable="true"
+        android:textStyle="bold"
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textColor="@color/icons"
+        android:textColor="@color/colorPrimary"
         android:textSize="14sp"
         tools:text="Filter 1"/>
 

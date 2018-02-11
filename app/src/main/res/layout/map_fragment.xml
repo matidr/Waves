@@ -19,7 +19,7 @@
         android:layout_marginRight="12dp"
         android:src="@drawable/add"
         android:tint="@color/icons"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:elevation="0dp"/>
 
@@ -33,7 +33,7 @@
         android:layout_marginLeft="12dp"
         android:src="@drawable/filter"
         android:tint="@color/icons"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:elevation="0dp"/>
 

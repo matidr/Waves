@@ -61,8 +61,9 @@ public class MenuListFragment extends BaseFragment {
                     ProfileFragment profileFragment = ProfileFragment.newInstance(profiles);
                     navigator.navigateToFragment((AppCompatActivity) getActivity(), profileFragment, R.id.map_fragment_container);
                     break;
-                case "About":
-
+                case "About us":
+                    AboutFragment aboutFragment = new AboutFragment();
+                    navigator.navigateToFragment((AppCompatActivity) getActivity(), aboutFragment, R.id.map_fragment_container);
                     break;
             }
             if (navigationDrawerListener != null) {

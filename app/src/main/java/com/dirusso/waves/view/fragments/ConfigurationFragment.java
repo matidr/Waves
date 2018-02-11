@@ -2,8 +2,11 @@ package com.dirusso.waves.view.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.dirusso.waves.R;
 import com.dirusso.waves.presenter.BasePresenter;
 import com.dirusso.waves.utils.SharedPreferencesUtils;
@@ -38,6 +42,7 @@ public class ConfigurationFragment extends BaseFragment {
     private List<Profile> profiles;
     private OnConfigurationFragmentListener listener;
     private Profile selectedProfile;
+    private LottieAnimationView gearsView;
 
     @Inject
     public SharedPreferencesUtils sharedPreferencesUtils;
@@ -73,8 +78,8 @@ public class ConfigurationFragment extends BaseFragment {
             listener.onConfigurationSaved("No exiten perfiles, lo sentimos");
         }
 
-        spinner = (Spinner) root.findViewById(R.id.spinner);
-        saveButton = (Button) root.findViewById(R.id.save_profile_btn);
+        spinner = root.findViewById(R.id.spinner);
+        saveButton = root.findViewById(R.id.save_profile_btn);
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -98,6 +103,13 @@ public class ConfigurationFragment extends BaseFragment {
             }
         });
         spinner.setAdapter(adapter);
+        gearsView = root.findViewById(R.id.animation_view);
+        gearsView.addColorFilterToLayer("Null 5", new PorterDuffColorFilter(Color.TRANSPARENT,
+                PorterDuff.Mode.SRC_ATOP));
+        gearsView.addColorFilterToLayer("gear3", new PorterDuffColorFilter(Color.WHITE,
+                PorterDuff.Mode.SRC_ATOP));
+        gearsView.addColorFilterToLayer("gear2", new PorterDuffColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent),
+                PorterDuff.Mode.SRC_ATOP));
         return root;
     }
 

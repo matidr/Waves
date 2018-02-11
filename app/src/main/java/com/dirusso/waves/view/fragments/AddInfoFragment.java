@@ -4,9 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -35,16 +33,14 @@ import dirusso.services.models.Beach;
 public class AddInfoFragment extends AAH_FabulousFragment {
     private static final String BEACH = "beach";
     private static final String ATTRIBUTE_LIST = "attributeList";
-
+    @Inject
+    protected AddBeachInfoPresenter presenter;
     ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
     ImageButton imgbtn_apply;
     Beach beach;
     private ListView attributesLv;
-    private DisplayMetrics metrics;
     private MapFragment mapFragment;
     private List<Attribute.AttributeType> attributeList;
-    @Inject
-    protected AddBeachInfoPresenter presenter;
 
     public static AddInfoFragment newInstance(List<Attribute.AttributeType> attributes, Beach beach) {
         Bundle args = new Bundle();
@@ -64,7 +60,6 @@ public class AddInfoFragment extends AAH_FabulousFragment {
         }
         mapFragment = (MapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map_fragment_container);
         applied_filters = mapFragment.getApplied_filters();
-        metrics = this.getResources().getDisplayMetrics();
     }
 
     @Override
@@ -82,7 +77,11 @@ public class AddInfoFragment extends AAH_FabulousFragment {
                 TextView nameTv = item.findViewById(R.id.filter_single_name);
                 SeekBar seekBar = item.findViewById(R.id.filter_single_seekbar);
                 if (nameTv.getTag() != null && nameTv.getTag().equals("selected")) {
-                    resultList.add(Attribute.getAttribute(nameTv.getText().toString(), seekBar.getProgress()));
+                    if (!nameTv.getText().toString().equalsIgnoreCase("JELLYFISH")) {
+                        resultList.add(Attribute.getAttribute(nameTv.getText().toString(), seekBar.getProgress()));
+                    } else {
+                        resultList.add(Attribute.getAttribute("JELLYFISH"));
+                    }
                 }
             }
             mapFragment.sendBeachInfo(beach, resultList);
