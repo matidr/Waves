@@ -67,15 +67,20 @@ public class MapFragmentPresenter extends BasePresenter<MapFragmentView> {
         if (beaches != null) {
             for (Beach beach : beaches) {
                 if (beach.getAttibutesValuesList() != null) {
+                    int count = 0;
                     for (AttributeValue values : beach.getAttibutesValuesList()) {
                         for (Attribute attribute : attributes) {
                             if (values.getAttribute() != null && attribute.getType() != null &&
                                     values.getAttribute().equalsIgnoreCase(attribute.getType()) &&
                                     values.getValue() == attribute.getValue()) {
-                                filteredBeaches.add(beach);
+                                count++;
                             }
                         }
                     }
+                    if (count == attributes.size()) {
+                        filteredBeaches.add(beach);
+                    }
+                    count = 0;
                 }
             }
         }

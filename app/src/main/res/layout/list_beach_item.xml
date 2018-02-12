@@ -12,8 +12,7 @@
             android:id="@+id/beach_placeholder"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/beach"/>
+            android:layout_marginRight="15dp"/>
 
         <TextView
             android:id="@+id/beach_name"

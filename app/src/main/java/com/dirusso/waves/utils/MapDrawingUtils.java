@@ -84,7 +84,8 @@ public class MapDrawingUtils {
     public static MarkerOptions createMarker(Attribute attribute, LatLng position) {
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(attribute.getDrawable());
 
-        MarkerOptions markerOptions = new MarkerOptions().position(position)
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(position)
                 .title(attribute.getName())
                 .snippet("")
                 .icon(icon);

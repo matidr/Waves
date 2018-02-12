@@ -32,6 +32,9 @@ import com.dirusso.waves.view.BaseView;
 import com.dirusso.waves.view.BeachViewProperties;
 import com.dirusso.waves.view.MapFragmentView;
 import com.dirusso.waves.view.activities.BeachDetailsActivity;
+import com.dirusso.waves.view.map.utils.ClusterRenderer;
+import com.dirusso.waves.view.map.utils.MarkerItem;
+import com.dirusso.waves.view.map.utils.NonHierarchicalDistanceBasedAlgorithm;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -42,6 +45,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.common.collect.Lists;
+import com.google.maps.android.clustering.ClusterManager;
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.io.Serializable;
@@ -64,9 +68,8 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener {
 
     private static final LatLng DEFAULT_POSITION = new LatLng(-34.910340, -56.141932);
-    private static final int DEFAULT_ZOOM = 16;
+    private static final int DEFAULT_ZOOM = 14;
     private static final String ATTRIBUTES = "attributes";
-    private static final String BEACHES = "beaches";
     private static final String PROFILES = "profiles";
     @Inject
     protected MapFragmentPresenter presenter;
@@ -91,6 +94,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private boolean isButtonVisible;
     private OnAttachInterface listener;
     private List<Marker> markers;
+    private ClusterManager clusterManager;
 
     public MapFragment() {
         // required empty constructor
@@ -148,6 +152,15 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(getActivity().getApplicationContext(), R.raw.style_json);
             googleMap.setMapStyle(style);
             setupFragmentPreferences();
+
+            clusterManager = new ClusterManager<>(getActivity(), googleMap);
+            ClusterRenderer clusterRenderer = new ClusterRenderer(getActivity(), googleMap, clusterManager);
+            clusterManager.setRenderer(clusterRenderer);
+            clusterManager.setAlgorithm(new NonHierarchicalDistanceBasedAlgorithm<>());
+            googleMap.setOnCameraIdleListener(clusterManager);
+            googleMap.setOnMarkerClickListener(clusterManager);
+            googleMap.setOnInfoWindowClickListener(clusterManager);
+
             afterMapReady();
             googleMap.getUiSettings().setMyLocationButtonEnabled(true);
             googleMap.getUiSettings().setMapToolbarEnabled(false);
@@ -162,6 +175,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         super.onResume();
         mMapView.onResume();
         if (googleMap != null) {
+            clusterManager.clearItems();
             googleMap.clear();
         }
         presenter.getBeaches();
@@ -199,12 +213,12 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private void drawBeach(final Beach beach) {
         mMapView.getMapAsync(map -> {
             googleMap = map;
-            googleMap.setOnCameraMoveListener(() -> {
+            /*googleMap.setOnCameraMoveListener(() -> {
                 boolean showMarker = googleMap.getCameraPosition().zoom > 14 ? true : false;
                 for (Marker marker : markers) {
                     marker.setVisible(showMarker);
                 }
-            });
+            });*/
             PolygonOptions polygonOptions = MapDrawingUtils.drawPolygon(R.color
                             .cast_libraries_material_featurehighlight_outer_highlight_default_color,
                     R.color.cast_libraries_material_featurehighlight_outer_highlight_default_color,
@@ -224,16 +238,21 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
                 addAttributeMarkers(beachAttributeList, polygon);
             }
-            googleMap.addMarker(MapDrawingUtils.getPlaceMarkerBeach(beach)).showInfoWindow();
+            //googleMap.addMarker(MapDrawingUtils.getPlaceMarkerBeach(beach)).showInfoWindow();
         });
     }
 
     private void addAttributeMarkers(List<Attribute> attributes, Polygon beachPolygon) {
         List<LatLng> possibleCoordinatesForAttributes = MapDrawingUtils.getListOfPossibleCoordinatesForAttributes(beachPolygon.getPoints());
         for (int i = 0; i < possibleCoordinatesForAttributes.size() && i < attributes.size(); i++) {
-            Marker marker = googleMap.addMarker(MapDrawingUtils.createMarker(attributes.get(i),
+            MarkerItem markerItem = new MarkerItem(MapDrawingUtils.createMarker(attributes.get(i),
                     possibleCoordinatesForAttributes.get(i)));
-            markers.add(marker);
+            clusterManager.removeItem(markerItem);
+            clusterManager.addItem(markerItem);
+
+            /*Marker marker = googleMap.addMarker(MapDrawingUtils.createMarker(attributes.get(i),
+                    possibleCoordinatesForAttributes.get(i)));
+            markers.add(marker);*/
         }
     }
 
@@ -246,6 +265,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
     private void afterMapReady() {
         if (googleMap != null) {
+            clusterManager.clearItems();
             googleMap.clear();
             if (beaches != null) {
                 for (Beach beach : beaches) {
@@ -253,9 +273,9 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
                 }
             }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MapDrawingUtils.getCurrentLocation(getActivity()) == null ?
-                                                                   DEFAULT_POSITION
-                                                                                                                             : MapDrawingUtils
-                                                                           .getCurrentLocation(getActivity()), DEFAULT_ZOOM));
+                                                                   DEFAULT_POSITION : MapDrawingUtils.getCurrentLocation(getActivity()),
+                    DEFAULT_ZOOM));
+            clusterManager.cluster();
         }
     }
 
@@ -265,7 +285,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             if (beach.getAttibutesValuesList() != null) {
                 for (AttributeValue attributeValue : beach.getAttibutesValuesList()) {
                     Attribute attribute = Attribute.getAttribute(attributeValue.getAttribute(), attributeValue.getValue());
-                    if (attribute != null) {
+                    if (attribute != null && !attributes.contains(attribute.getName())) {
                         attributes.add(attribute.getName());
                     }
                 }
@@ -445,6 +465,8 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
     public void removeFilter() {
         attributes = Lists.newArrayList();
+        beaches = allBeaches;
+        loadBeaches(beaches);
     }
 
     //TODO add this to the onclick of the add button

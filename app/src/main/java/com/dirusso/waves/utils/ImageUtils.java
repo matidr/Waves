@@ -1,10 +1,6 @@
 package com.dirusso.waves.utils;
 
-import android.content.Context;
-import android.os.Build;
-
 import com.dirusso.waves.R;
-import com.dirusso.waves.models.Attribute;
 
 import dirusso.services.models.Profile;
 
@@ -15,8 +11,8 @@ import dirusso.services.models.Profile;
 public class ImageUtils {
 
     public static int getProfileDrawable(Profile profile) {
-        int drawable = R.drawable.beach;
-        switch (profile.getName()) {
+        int drawable = R.drawable.waves_logo;
+        /*switch (profile.getName()) {
             case "Surfer":
                 drawable = R.drawable.surfer;
                 break;
@@ -26,10 +22,10 @@ public class ImageUtils {
             case "Pescador":
                 drawable = R.drawable.fisherman;
                 break;
-        }
+        }*/
         return drawable;
     }
-
+/*
     public static int getAttributeTypeImage(String attributeType) {
         int drawable = R.drawable.beach;
         switch (attributeType) {
@@ -50,5 +46,5 @@ public class ImageUtils {
                 break;
         }
         return drawable;
-    }
+    }*/
 }
