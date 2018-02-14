@@ -16,10 +16,8 @@ import com.dirusso.waves.presenter.MainActivityPresenter;
 import com.dirusso.waves.view.BaseView;
 import com.dirusso.waves.view.BeachViewProperties;
 import com.dirusso.waves.view.MainInterface;
-import com.dirusso.waves.view.fragments.AddBeachInfoFragment;
 import com.dirusso.waves.view.fragments.BaseFragment;
 import com.dirusso.waves.view.fragments.ConfigurationFragment;
-import com.dirusso.waves.view.fragments.FilterFragment;
 import com.dirusso.waves.view.fragments.MapFragment;
 import com.dirusso.waves.view.fragments.MenuListFragment;
 import com.google.common.base.Strings;
@@ -32,11 +30,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dirusso.services.models.Beach;
 import dirusso.services.models.Profile;
 
-public class MainActivity extends BaseActivity implements MainInterface, FilterFragment.OnGeneralFilerListener, AddBeachInfoFragment
-        .OnAddBeachInfoListener, ConfigurationFragment.OnConfigurationFragmentListener, MenuListFragment.NavigationDrawerInterface, MapFragment.OnAttachInterface {
+public class MainActivity extends BaseActivity implements MainInterface, ConfigurationFragment.OnConfigurationFragmentListener, MenuListFragment
+        .NavigationDrawerInterface, MapFragment.OnAttachInterface {
 
     public static final String ATTRIBUTE_TYPE_LIST = "attributeTyepList";
     public static final String PROFILE_ID_SHARED_PREFS = "profileId";
@@ -149,7 +146,6 @@ public class MainActivity extends BaseActivity implements MainInterface, FilterF
         return attributeTypes;
     }
 
-    @Override
     public void navigateBackWithMessage(String message) {
         if (!Strings.isNullOrEmpty(message)) {
             if (message.equalsIgnoreCase("La playa ha sido actualizada")) {

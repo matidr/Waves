@@ -12,8 +12,8 @@
         android:layout_gravity="center_vertical"
         android:background="@android:color/transparent"
         app:headerLayout="@layout/view_global_menu_header"
-        app:itemIconTint="#ffffff"
-        app:itemTextColor="#ffffff"
+        app:itemIconTint="@color/icons"
+        app:itemTextColor="@color/icons"
         app:menu="@menu/drawer_menu"/>
 
     <com.airbnb.lottie.LottieAnimationView

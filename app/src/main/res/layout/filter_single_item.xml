@@ -5,30 +5,82 @@
               android:layout_height="wrap_content"
               android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/filter_single_name"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/chip_unselected"
-        android:clickable="true"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:textColor="@color/colorPrimary"
-        android:textSize="14sp"
-        tools:text="Filter 1"/>
-
-
-    <SeekBar
-        android:id="@+id/filter_single_seekbar"
+    <LinearLayout
+        android:id="@+id/header_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="5dp"
-        android:max="2"
-        android:progressDrawable="@drawable/seekbar_drawable"
-        android:thumb="@null"/>
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:weightSum="3">
 
+        <TextView
+            android:id="@+id/filter_single_name"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/chip_unselected"
+            android:clickable="true"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Filter 1"/>
+
+        <SeekBar
+            android:id="@+id/filter_single_seekbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:max="2"
+            android:progressDrawable="@drawable/seekbar_drawable"
+            android:splitTrack="false"
+            android:thumb="@drawable/thumb"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:text="low"
+                android:textColor="@color/filters_buttons_selected"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="25dp"
+                android:text="high"
+                android:textColor="@color/filters_buttons_selected"/>
+
+        </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

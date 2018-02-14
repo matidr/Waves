@@ -2,10 +2,8 @@ package com.dirusso.waves;
 
 import com.dirusso.waves.view.activities.MainActivity;
 import com.dirusso.waves.view.activities.SplashActivity;
-import com.dirusso.waves.view.fragments.AddBeachInfoFragment;
 import com.dirusso.waves.view.fragments.ConfigurationFragment;
 import com.dirusso.waves.view.fragments.MapFragment;
-import com.dirusso.waves.view.fragments.ProfileTabFilterFragment;
 
 import javax.inject.Singleton;
 
@@ -27,10 +25,6 @@ public interface ApplicationComponent {
 
     void inject(SplashActivity activity);
 
-    void inject(AddBeachInfoFragment fragment);
-
     void inject(ConfigurationFragment fragment);
-
-    void inject(ProfileTabFilterFragment fragment);
 
 }

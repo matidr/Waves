@@ -80,7 +80,6 @@ public class MapFragmentPresenter extends BasePresenter<MapFragmentView> {
                     if (count == attributes.size()) {
                         filteredBeaches.add(beach);
                     }
-                    count = 0;
                 }
             }
         }

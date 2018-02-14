@@ -3,11 +3,13 @@ package com.dirusso.waves.utils;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.LocationManager;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
+import com.dirusso.waves.R;
 import com.dirusso.waves.models.Attribute;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -16,8 +18,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -31,25 +31,24 @@ import dirusso.services.models.LatitudeLongitude;
 
 public class MapDrawingUtils {
 
-    //TODO Find a defult color overlay for polygons
-    private static final int POLYGON_DEFAULT_COLOR_OVERLAY = 0;
 
     /**
      * Get polygon options to draw create and draw polygon in google map
      *
-     * @param colorOverlay
-     * @param strokeColor
      * @param coordinates
+     *
      * @return
      */
-    public static PolygonOptions drawPolygon(int colorOverlay, int strokeColor, LatitudeLongitude... coordinates) {
-        PolygonOptions polygonOptions = new PolygonOptions()
-                .fillColor(colorOverlay == 0 ? POLYGON_DEFAULT_COLOR_OVERLAY : colorOverlay)
-                .strokeColor(strokeColor == 0 ? POLYGON_DEFAULT_COLOR_OVERLAY : strokeColor)
-                .clickable(true);
+    public static PolygonOptions drawPolygon(int fillColor, int strokeColor, LatitudeLongitude... coordinates) {
+        List<LatLng> coordinatesList = Lists.newArrayList();
         for (LatitudeLongitude latitudeLongitude : coordinates) {
-            polygonOptions.add(new LatLng(latitudeLongitude.getLat(), latitudeLongitude.getLon()));
+            coordinatesList.add(new LatLng(latitudeLongitude.getLat(), latitudeLongitude.getLon()));
         }
+        PolygonOptions polygonOptions = new PolygonOptions();
+        polygonOptions.addAll(coordinatesList);
+        polygonOptions.fillColor(fillColor);
+        polygonOptions.strokeWidth(10);
+        polygonOptions.strokeColor(strokeColor);
         return polygonOptions;
     }
 
@@ -57,6 +56,7 @@ public class MapDrawingUtils {
      * Based on latitude and longitude coordinates from polygon, calculate the center coordinate (lat, lon)
      *
      * @param polygonPointsList
+     *
      * @return
      */
     public static LatLng getPolygonCenterPoint(LatitudeLongitude... polygonPointsList) {
@@ -71,6 +71,7 @@ public class MapDrawingUtils {
      * Get marker with information based on the beach
      *
      * @param beach
+     *
      * @return
      */
     public static MarkerOptions getPlaceMarkerBeach(Beach beach) {
@@ -91,12 +92,6 @@ public class MapDrawingUtils {
                 .icon(icon);
 
         return markerOptions;
-    }
-
-    public static GroundOverlayOptions createMarker2(Attribute attribute, LatLng position) {
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(attribute.getDrawable());
-        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions().image(icon).position(position, 100);
-        return groundOverlayOptions;
     }
 
     private static LatLng getPolygonCenterPoint(LatLng... polygonPointsList) {
@@ -141,7 +136,7 @@ public class MapDrawingUtils {
 
     public static boolean isPointInPolygon(LatLng location, List<LatitudeLongitude> vertices) {
         List<LatLng> latLngList = Lists.newArrayList();
-        for (LatitudeLongitude latitudeLongitude: vertices) {
+        for (LatitudeLongitude latitudeLongitude : vertices) {
             latLngList.add(new LatLng(latitudeLongitude.getLat(), latitudeLongitude.getLon()));
         }
         return isPointInPolygonLatLng(location, latLngList);
@@ -175,7 +170,9 @@ public class MapDrawingUtils {
             Criteria criteria = new Criteria();
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             String provider = locationManager.getBestProvider(criteria, false);
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat
+                            .checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding

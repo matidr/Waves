@@ -25,7 +25,7 @@ public enum Attribute implements AttributesInterface {
     FLAG_GREEN(0, "Bandera Verde", R.drawable.flag_green, "FLAG"),
     FLAG_YELLOW(1, "Bandera Amarilla", R.drawable.flag_yellow, "FLAG"),
     FLAG_RED(2, "Bandera Roja", R.drawable.flag_red, "FLAG"),
-    JELLYFISH(2, "Hay aguavivas", R.drawable.jellyfish, "JELLYFISH");
+    JELLYFISH(1, "Hay aguavivas", R.drawable.jellyfish, "JELLYFISH");
 
     private int value;
     private String name;

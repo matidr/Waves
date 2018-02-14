@@ -50,6 +50,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.github.apl-devs:appintro:v4.2.2'
     compile 'com.android.support:mediarouter-v7:27.0.2'
+    compile 'com.github.marcinmoskala:ArcSeekBar:0.31'
     compile 'com.github.toanvc:floatingactionmenu:0.8.9'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:support-v4:27.0.2'

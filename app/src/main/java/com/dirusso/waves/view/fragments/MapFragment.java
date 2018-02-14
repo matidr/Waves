@@ -17,9 +17,16 @@ import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
@@ -45,6 +52,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.common.collect.Lists;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
@@ -60,12 +68,14 @@ import dirusso.services.models.AttributeValue;
 import dirusso.services.models.Beach;
 import dirusso.services.models.Profile;
 
+
 /**
  * Created by Matias Di Russo on 1/4/17.
  */
 
 public class MapFragment extends BaseFragment implements MapFragmentView, BeachViewProperties, MenuListFragment.NavigationDrawerInterface,
-        AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener {
+        AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener, ClusterManager.OnClusterItemClickListener, GoogleMap
+                .OnMapClickListener, GestureDetector.OnGestureListener {
 
     private static final LatLng DEFAULT_POSITION = new LatLng(-34.910340, -56.141932);
     private static final int DEFAULT_ZOOM = 14;
@@ -77,6 +87,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     AlertDialog errorDialog;
     AlertDialog successDialog;
     AlertDialog.Builder dialogBuilder;
+    GestureDetector gestureDetector;
     private MapView mMapView;
     private GoogleMap googleMap;
     private Map<Polygon, Beach> polygonBeachMap;
@@ -95,6 +106,8 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private OnAttachInterface listener;
     private List<Marker> markers;
     private ClusterManager clusterManager;
+    private RelativeLayout overlayLayout;
+    private boolean isOverlayVisible;
 
     public MapFragment() {
         // required empty constructor
@@ -118,6 +131,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             profiles = (List<Profile>) getArguments().getSerializable(PROFILES);
         }
         markers = Lists.newArrayList();
+        gestureDetector = new GestureDetector(getContext(), this);
     }
 
     @Override
@@ -127,7 +141,6 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         mMapView = rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
-
         fabFilters = rootView.findViewById(R.id.fab_filter);
         filtersFragment = FiltersFragment.newInstance();
         filtersFragment.setParentFab(fabFilters);
@@ -138,6 +151,12 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         addInfoFragment.setParentFab(fabAddInfo);
         // TODO add when working with services
         //fabAddInfo.setVisibility(View.GONE);
+        overlayLayout = rootView.findViewById(R.id.overlay_view);
+        overlayLayout.setOnTouchListener((v, event) -> {
+            gestureDetector.onTouchEvent(event);
+            return true;
+        });
+        isOverlayVisible = false;
         isButtonVisible = false;
         fabAddInfo.setOnClickListener(v -> {
             // TODO add when working with services
@@ -152,18 +171,20 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(getActivity().getApplicationContext(), R.raw.style_json);
             googleMap.setMapStyle(style);
             setupFragmentPreferences();
-
-            clusterManager = new ClusterManager<>(getActivity(), googleMap);
-            ClusterRenderer clusterRenderer = new ClusterRenderer(getActivity(), googleMap, clusterManager);
+            clusterManager = new ClusterManager<>(getContext(), googleMap);
+            ClusterRenderer clusterRenderer = new ClusterRenderer(getContext(), googleMap, clusterManager);
             clusterManager.setRenderer(clusterRenderer);
-            clusterManager.setAlgorithm(new NonHierarchicalDistanceBasedAlgorithm<>());
+            clusterManager.setAlgorithm(new NonHierarchicalDistanceBasedAlgorithm<MarkerItem>());
+            clusterManager.setOnClusterItemClickListener(this);
+            googleMap.setOnMapClickListener(this);
+            googleMap.setInfoWindowAdapter(clusterManager.getMarkerManager());
             googleMap.setOnCameraIdleListener(clusterManager);
-            googleMap.setOnMarkerClickListener(clusterManager);
+            googleMap.setOnMarkerClickListener(marker -> clusterManager.onMarkerClick(marker));
             googleMap.setOnInfoWindowClickListener(clusterManager);
-
-            afterMapReady();
             googleMap.getUiSettings().setMyLocationButtonEnabled(true);
             googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+            afterMapReady();
         });
         mMapView.setOnClickListener(null);
 
@@ -213,16 +234,12 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private void drawBeach(final Beach beach) {
         mMapView.getMapAsync(map -> {
             googleMap = map;
-            /*googleMap.setOnCameraMoveListener(() -> {
-                boolean showMarker = googleMap.getCameraPosition().zoom > 14 ? true : false;
-                for (Marker marker : markers) {
-                    marker.setVisible(showMarker);
-                }
-            });*/
-            PolygonOptions polygonOptions = MapDrawingUtils.drawPolygon(R.color
-                            .cast_libraries_material_featurehighlight_outer_highlight_default_color,
-                    R.color.cast_libraries_material_featurehighlight_outer_highlight_default_color,
-                    beach.getLeftUp(), beach.getRightUp(), beach.getDownCoord(), beach.getUpCoord());
+            PolygonOptions polygonOptions = MapDrawingUtils.drawPolygon(ContextCompat.getColor(getActivity(), R.color.transparency_pink),
+                    ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark),
+                    beach.getLeftUp(),
+                    beach.getRightUp(),
+                    beach.getDownCoord(),
+                    beach.getUpCoord());
             Polygon polygon = googleMap.addPolygon(polygonOptions);
             polygon.setClickable(true);
             addBeachToMap(polygon, beach);
@@ -249,10 +266,6 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
                     possibleCoordinatesForAttributes.get(i)));
             clusterManager.removeItem(markerItem);
             clusterManager.addItem(markerItem);
-
-            /*Marker marker = googleMap.addMarker(MapDrawingUtils.createMarker(attributes.get(i),
-                    possibleCoordinatesForAttributes.get(i)));
-            markers.add(marker);*/
         }
     }
 
@@ -594,10 +607,129 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
     }
 
+    @Override
+    public boolean onClusterItemClick(ClusterItem clusterItem) {
+        TextView attributeName = overlayLayout.findViewById(R.id.attribute_name);
+        attributeName.setText(clusterItem.getTitle());
+        ImageView imageView = overlayLayout.findViewById(R.id.attribute_icon);
+        imageView.setImageDrawable(ContextCompat.getDrawable(getActivity(), Attribute.getAttribute(clusterItem.getTitle()).getDrawable()));
+        slideToDown();
+
+        return true;
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if (isOverlayVisible) {
+            slideToAbove();
+        }
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        if (e1.getY() > e2.getY()) {
+            slideToAbove();
+        }
+
+        return true;
+    }
+
+    public void slideToAbove() {
+        Animation slide = null;
+        slide = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                0.0f, Animation.RELATIVE_TO_SELF, -5.0f);
+
+        slide.setDuration(400);
+        slide.setFillAfter(true);
+        slide.setFillEnabled(true);
+        overlayLayout.startAnimation(slide);
+
+        slide.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                overlayLayout.clearAnimation();
+                overlayLayout.setVisibility(View.GONE);
+                isOverlayVisible = false;
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+        });
+
+    }
+
+    public void slideToDown() {
+        Animation slide = null;
+        slide = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                -5.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+
+        slide.setDuration(400);
+        slide.setFillAfter(true);
+        slide.setFillEnabled(true);
+        overlayLayout.startAnimation(slide);
+
+        slide.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+                overlayLayout.setVisibility(View.VISIBLE);
+                isOverlayVisible = true;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                overlayLayout.clearAnimation();
+            }
+        });
+
+    }
+
     public interface OnAttachInterface {
         List<Profile> getProfiles();
 
         List<Attribute.AttributeType> getAttributes();
     }
+
 }
 

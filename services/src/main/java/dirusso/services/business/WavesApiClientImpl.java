@@ -71,7 +71,7 @@ public class WavesApiClientImpl implements WavesRepository {
                                                                              .withAttributes(Lists.newArrayList(new AttributeValue("FLAG", 2), new
                                                                                              AttributeValue("WIND", 2),
                                                                                      new AttributeValue("WATER", 2), new AttributeValue("WAVES",
-                                                                                             2), new AttributeValue("JELLYFISH", 2)))
+                                                                                             2), new AttributeValue("JELLYFISH", 1)))
                                                                              .withDescription("La playa de pocitos es una hermosa playa para " +
                                                                                      "relajarse que no se ajusta a deportes acuaticos")
                                                                              .build();
@@ -97,7 +97,7 @@ public class WavesApiClientImpl implements WavesRepository {
                                                                               .withAttributes(Lists.newArrayList(new AttributeValue("FLAG", 0), new
                                                                                               AttributeValue("WIND", 0),
                                                                                       new AttributeValue("WATER", 0), new AttributeValue("WAVES",
-                                                                                              0), new AttributeValue("JELLYFISH", 2)))
+                                                                                              0), new AttributeValue("JELLYFISH", 1)))
                                                                               .withDescription("La playa Benito Blanco ofrece actividades para " +
                                                                                       "todos los gustos")
                                                                               .build();
@@ -139,7 +139,7 @@ public class WavesApiClientImpl implements WavesRepository {
                                                                               .withAttributes(Lists.newArrayList(new AttributeValue("FLAG", 0), new
                                                                                               AttributeValue("WIND", 0),
                                                                                       new AttributeValue("WATER", 1), new AttributeValue("WAVES",
-                                                                                              2), new AttributeValue("JELLYFISH", 2)))
+                                                                                              2), new AttributeValue("JELLYFISH", 1)))
                                                                               .withDescription("La playa Pre Pocitos es bastante amplia")
                                                                               .build();
 
