@@ -13,15 +13,15 @@ import dirusso.services.models.interfaces.AttributesInterface;
 
 public enum Attribute implements AttributesInterface {
 
-    WIND_LOW(0, "Poco Viento", R.drawable.wind_low, "WIND"),
-    WIND_MED(1, "Viento Mediano", R.drawable.wind_medium, "WIND"),
+    WIND_LOW(0, "Sin Viento", R.drawable.wind_low, "WIND"),
+    WIND_MED(1, "Algo de viento", R.drawable.wind_medium, "WIND"),
     WIND_HIGHT(2, "Mucho Viento", R.drawable.wind_high, "WIND"),
     WATER_TEMP_LOW(0, "Agua fria", R.drawable.temp_water_low, "WATER"),
     WATER_TEMP_MED(1, "Agua templada", R.drawable.temp_water_medium, "WATER"),
     WATER_TEMP_HIGH(2, "Agua caliente", R.drawable.temp_water_high, "WATER"),
-    WAVES_LOW(0, "Olas chicas", R.drawable.waves_low, "WAVES"),
-    WAVES_MED(1, "Olas Medianas", R.drawable.waves_medium, "WAVES"),
-    WAVES_HIGH(2, "Olas grandes", R.drawable.waves_high, "WAVES"),
+    WAVES_LOW(0, "Sin olas", R.drawable.waves_low, "WAVES"),
+    WAVES_MED(1, "Algo de olas", R.drawable.waves_medium, "WAVES"),
+    WAVES_HIGH(2, "Muchas olas", R.drawable.waves_high, "WAVES"),
     FLAG_GREEN(0, "Bandera Verde", R.drawable.flag_green, "FLAG"),
     FLAG_YELLOW(1, "Bandera Amarilla", R.drawable.flag_yellow, "FLAG"),
     FLAG_RED(2, "Bandera Roja", R.drawable.flag_red, "FLAG"),
@@ -84,19 +84,22 @@ public enum Attribute implements AttributesInterface {
 
     public static class AttributeType implements Serializable {
 
-        public int drawable;
+        private int drawable;
         private String name;
+        private boolean isYesNo;
 
         public AttributeType() {
         }
 
-        public AttributeType(String name) {
+        public AttributeType(String name, boolean isYesNo) {
             this.name = name;
+            this.isYesNo = isYesNo;
         }
 
-        public AttributeType(String name, int drawable) {
+        public AttributeType(String name, int drawable, boolean isYesNo) {
             this.name = name.toUpperCase();
             this.drawable = drawable;
+            this.isYesNo = isYesNo;
         }
 
         public String getName() {
@@ -105,6 +108,10 @@ public enum Attribute implements AttributesInterface {
 
         public int getDrawable() {
             return drawable;
+        }
+
+        public boolean isYesNo() {
+            return isYesNo;
         }
 
     }

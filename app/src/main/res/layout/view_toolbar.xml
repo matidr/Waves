@@ -7,5 +7,4 @@
                                    android:background="?attr/colorPrimary"
                                    app:elevation="@dimen/default_elevation"
                                    app:layout_scrollFlags="scroll|enterAlways"
-                                   app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-</android.support.v7.widget.Toolbar>
+                                   app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>

@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,6 +35,7 @@ import com.dirusso.waves.R;
 import com.dirusso.waves.models.Attribute;
 import com.dirusso.waves.presenter.BasePresenter;
 import com.dirusso.waves.presenter.MapFragmentPresenter;
+import com.dirusso.waves.utils.ImageUtils;
 import com.dirusso.waves.utils.MapDrawingUtils;
 import com.dirusso.waves.view.BaseView;
 import com.dirusso.waves.view.BeachViewProperties;
@@ -48,7 +50,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.common.collect.Lists;
@@ -68,6 +69,8 @@ import dirusso.services.models.AttributeValue;
 import dirusso.services.models.Beach;
 import dirusso.services.models.Profile;
 
+import static com.google.android.gms.internal.zzahn.runOnUiThread;
+
 
 /**
  * Created by Matias Di Russo on 1/4/17.
@@ -75,14 +78,17 @@ import dirusso.services.models.Profile;
 
 public class MapFragment extends BaseFragment implements MapFragmentView, BeachViewProperties, MenuListFragment.NavigationDrawerInterface,
         AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener, ClusterManager.OnClusterItemClickListener, GoogleMap
-                .OnMapClickListener, GestureDetector.OnGestureListener {
+                .OnMapClickListener, GestureDetector.OnGestureListener, GoogleMap.OnMapLongClickListener {
 
     private static final LatLng DEFAULT_POSITION = new LatLng(-34.910340, -56.141932);
     private static final int DEFAULT_ZOOM = 14;
+    private static final int BEACH_ZOOM = 17;
     private static final String ATTRIBUTES = "attributes";
     private static final String PROFILES = "profiles";
     @Inject
     protected MapFragmentPresenter presenter;
+    @Inject
+    protected List<Beach> allBeaches;
     AlertDialog loaderDialog;
     AlertDialog errorDialog;
     AlertDialog successDialog;
@@ -99,15 +105,16 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     private List<Profile> profiles;
     private List<Beach> beaches;
     private ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
-    private List<Beach> allBeaches;
     private List<Attribute.AttributeType> attributeTypes;
     private Beach currentBeach;
     private boolean isButtonVisible;
     private OnAttachInterface listener;
-    private List<Marker> markers;
     private ClusterManager clusterManager;
     private RelativeLayout overlayLayout;
     private boolean isOverlayVisible;
+    private TextView weatherTemp;
+    private ImageView weatherIcon;
+    private LinearLayout weatherLayout;
 
     public MapFragment() {
         // required empty constructor
@@ -130,7 +137,6 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             attributeTypes = (List<Attribute.AttributeType>) getArguments().getSerializable(ATTRIBUTES);
             profiles = (List<Profile>) getArguments().getSerializable(PROFILES);
         }
-        markers = Lists.newArrayList();
         gestureDetector = new GestureDetector(getContext(), this);
     }
 
@@ -147,10 +153,10 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         fabFilters.setOnClickListener(v -> filtersFragment.show(getActivity().getSupportFragmentManager(), filtersFragment.getTag()));
 
         fabAddInfo = rootView.findViewById(R.id.fab_add);
-        addInfoFragment = AddInfoFragment.newInstance(attributeTypes, currentBeach);
+        addInfoFragment = AddInfoFragment.newInstance(attributeTypes);
         addInfoFragment.setParentFab(fabAddInfo);
-        // TODO add when working with services
-        //fabAddInfo.setVisibility(View.GONE);
+        fabAddInfo.setVisibility(View.GONE);
+
         overlayLayout = rootView.findViewById(R.id.overlay_view);
         overlayLayout.setOnTouchListener((v, event) -> {
             gestureDetector.onTouchEvent(event);
@@ -159,10 +165,9 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         isOverlayVisible = false;
         isButtonVisible = false;
         fabAddInfo.setOnClickListener(v -> {
-            // TODO add when working with services
-            //if (attributeTypes != null && !attributeTypes.isEmpty() && currentBeach != null) {
-            addInfoFragment.show(getActivity().getSupportFragmentManager(), addInfoFragment.getTag());
-            //}
+            if (attributeTypes != null && !attributeTypes.isEmpty() && currentBeach != null) {
+                addInfoFragment.show(getActivity().getSupportFragmentManager(), addInfoFragment.getTag());
+            }
         });
 
         MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -177,6 +182,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             clusterManager.setAlgorithm(new NonHierarchicalDistanceBasedAlgorithm<MarkerItem>());
             clusterManager.setOnClusterItemClickListener(this);
             googleMap.setOnMapClickListener(this);
+            googleMap.setOnMapLongClickListener(this);
             googleMap.setInfoWindowAdapter(clusterManager.getMarkerManager());
             googleMap.setOnCameraIdleListener(clusterManager);
             googleMap.setOnMarkerClickListener(marker -> clusterManager.onMarkerClick(marker));
@@ -187,6 +193,10 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             afterMapReady();
         });
         mMapView.setOnClickListener(null);
+
+        weatherLayout = rootView.findViewById(R.id.weather_view);
+        weatherTemp = rootView.findViewById(R.id.weather_temp);
+        weatherIcon = rootView.findViewById(R.id.weather_icon);
 
         return rootView;
     }
@@ -200,6 +210,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             googleMap.clear();
         }
         presenter.getBeaches();
+        showWeather();
         if (listener != null) {
             if (profiles == null || profiles.isEmpty()) {
                 profiles = listener.getProfiles();
@@ -384,8 +395,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             this.beaches = presenter.filterOnResume(allBeaches, attributes);
         }
         setBeaches(this.beaches);
-        //TODO add when working with services
-        //showAddEventButton();
+        showAddEventButton();
     }
 
     @Override
@@ -482,9 +492,6 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         loadBeaches(beaches);
     }
 
-    //TODO add this to the onclick of the add button
-
-
     private void showAddEventButton() {
         boolean showAddButton = false;
 
@@ -568,8 +575,8 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
         }
     }
 
-    public void sendBeachInfo(Beach beach, List<Attribute> attributes) {
-        presenter.sendBeachInfo(beach, attributes);
+    public void sendBeachInfo(List<Attribute> attributes) {
+        presenter.sendBeachInfo(currentBeach, attributes);
     }
 
     private void navigateToDetails(Beach beach) {
@@ -660,6 +667,8 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
     }
 
     public void slideToAbove() {
+        weatherLayout.setVisibility(View.VISIBLE);
+        isOverlayVisible = true;
         Animation slide = null;
         slide = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
@@ -679,11 +688,9 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
             @Override
             public void onAnimationEnd(Animation animation) {
-
                 overlayLayout.clearAnimation();
                 overlayLayout.setVisibility(View.GONE);
                 isOverlayVisible = false;
-
             }
 
             @Override
@@ -694,7 +701,34 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
 
     }
 
+    private void showWeather() {
+        new Thread() {
+            public void run() {
+                try {
+                    synchronized (this) {
+                        LatLng location = MapDrawingUtils.getCurrentLocation(getActivity()) == null ?
+                                          DEFAULT_POSITION : MapDrawingUtils.getCurrentLocation(getActivity());
+                        String[] weatherInfo = presenter.getWeatherInfo(getContext(), location);
+                        wait(5000);
+
+                        runOnUiThread(() -> {
+                            if (weatherInfo != null && weatherInfo[0] != null && weatherInfo[1] != null) {
+                                weatherTemp.setText(weatherInfo[0] + "°C");
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), ImageUtils.getWeatherDrawable(weatherInfo[1])));
+                            }
+                        });
+
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
     public void slideToDown() {
+        weatherLayout.setVisibility(View.GONE);
+        isOverlayVisible = false;
         Animation slide = null;
         slide = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
@@ -723,6 +757,14 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
             }
         });
 
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                MapDrawingUtils.getCurrentLocation(getActivity()) == null ?
+                DEFAULT_POSITION : MapDrawingUtils.getCurrentLocation(getActivity()),
+                BEACH_ZOOM));
     }
 
     public interface OnAttachInterface {

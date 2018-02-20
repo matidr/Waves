@@ -22,13 +22,13 @@ import static com.dirusso.waves.WavesApplication.getContext;
  * Created by Matias Di Russo on 6/10/2017.
  */
 
-public class SingleFiltersAdapter extends BaseAdapter {
+public class AddInfoAdapter extends BaseAdapter {
 
     private static LayoutInflater inflater = null;
     List<Attribute.AttributeType> attributes;
     private Context context;
 
-    public SingleFiltersAdapter(Context context, List<Attribute.AttributeType> attributes) {
+    public AddInfoAdapter(Context context, List<Attribute.AttributeType> attributes) {
         // TODO Auto-generated constructor stub
         this.context = context;
         this.attributes = attributes;
@@ -54,10 +54,17 @@ public class SingleFiltersAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         Holder holder = new Holder();
-        View rowView = inflater.inflate(R.layout.filter_single_item, null);
+        View rowView = inflater.inflate(R.layout.add_info_single_item, null);
 
         holder.name = rowView.findViewById(R.id.filter_single_name);
         holder.seekBar = rowView.findViewById(R.id.filter_single_seekbar);
+        holder.minLabel = rowView.findViewById(R.id.min_label);
+        holder.maxLabel = rowView.findViewById(R.id.max_label);
+        if (attributes.get(position).isYesNo()) {
+            holder.seekBar.setMax(1);
+            holder.maxLabel.setText("yes");
+            holder.minLabel.setText("no");
+        }
         holder.name.setOnClickListener(v -> {
             if (holder.name.getTag() != null && holder.name.getTag().equals("selected")) {
                 holder.name.setTag("unselected");
@@ -99,6 +106,8 @@ public class SingleFiltersAdapter extends BaseAdapter {
             case 0:
                 if (name.equalsIgnoreCase("FLAG")) {
                     getToast("GREEN");
+                } else if (name.equalsIgnoreCase("JELLYFISH")) {
+                    getToast("SIN AGUAVIVAS");
                 } else {
                     getToast("LOW");
                 }
@@ -106,6 +115,8 @@ public class SingleFiltersAdapter extends BaseAdapter {
             case 1:
                 if (name.equalsIgnoreCase("FLAG")) {
                     getToast("YELLOW");
+                } else if (name.equalsIgnoreCase("JELLYFISH")) {
+                    getToast("CON AGUAVIVAS");
                 } else {
                     getToast("MEDIUM");
                 }
@@ -123,24 +134,24 @@ public class SingleFiltersAdapter extends BaseAdapter {
     }
 
     private void getToast(String text) {
-        if (text.equalsIgnoreCase("RED") || text.equalsIgnoreCase("HIGH")) {
+        if (text.equalsIgnoreCase("RED") || text.equalsIgnoreCase("HIGH") || text.equalsIgnoreCase("CON AGUAVIVAS")) {
             new StyleableToast.Builder(context)
                     .text(text)
-                    .textColor(Color.WHITE)
+                    .textColor(ContextCompat.getColor(getContext(), R.color.colorPrimary))
                     .backgroundColor(Color.RED)
                     .show();
         }
         if (text.equalsIgnoreCase("YELLOW") || text.equalsIgnoreCase("MEDIUM")) {
             new StyleableToast.Builder(context)
                     .text(text)
-                    .textColor(Color.WHITE)
+                    .textColor(ContextCompat.getColor(getContext(), R.color.colorPrimary))
                     .backgroundColor(Color.YELLOW)
                     .show();
         }
-        if (text.equalsIgnoreCase("GREEN") || text.equalsIgnoreCase("LOW")) {
+        if (text.equalsIgnoreCase("GREEN") || text.equalsIgnoreCase("LOW") || text.equalsIgnoreCase("SIN AGUAVIVAS")) {
             new StyleableToast.Builder(context)
                     .text(text)
-                    .textColor(Color.WHITE)
+                    .textColor(ContextCompat.getColor(getContext(), R.color.colorPrimary))
                     .backgroundColor(Color.GREEN)
                     .show();
         }
@@ -149,5 +160,7 @@ public class SingleFiltersAdapter extends BaseAdapter {
     private class Holder {
         TextView name;
         SeekBar seekBar;
+        TextView minLabel;
+        TextView maxLabel;
     }
 }

@@ -14,7 +14,7 @@ public interface WavesRepository {
 
     Observable<List<Beach>> getBeaches();
 
-    Observable<List<Beach>> reportDataFromBeach(String beachId, Beach beach);
+    Observable<List<Beach>> reportDataFromBeach(Beach beach);
 
     Observable<List<ResponseGetAllAttribute>> getAttributeList();
 

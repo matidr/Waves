@@ -72,7 +72,7 @@ public class SplashActivity extends AppCompatActivity {
                       @Override
                       public void onNext(List<ResponseGetAllAttribute> responseGetAllAttributes) {
                           for (ResponseGetAllAttribute attribute : responseGetAllAttributes) {
-                              attributeList.add(new Attribute.AttributeType(attribute.getAttributeName().toUpperCase()));
+                              attributeList.add(new Attribute.AttributeType(attribute.getAttributeName().toUpperCase(), attribute.isYesNo()));
                           }
                           initNextActivityStarterHandler();
                       }

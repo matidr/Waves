@@ -3,6 +3,7 @@ package com.dirusso.waves.view.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -49,8 +50,6 @@ public class MainActivity extends BaseActivity implements MainInterface, Configu
     /**
      * At the time beach list is injected to test.
      */
-    //    @Inject
-    //    protected List<Beach> beaches;
     public static Intent createIntent(@NonNull Context context, int intentFlag) {
         Intent intent = new Intent(context, MainActivity.class);
         if (intentFlag != 0) {
@@ -103,7 +102,9 @@ public class MainActivity extends BaseActivity implements MainInterface, Configu
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu_white);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setElevation(10);
+        }
         toolbar.setNavigationOnClickListener(v -> mDrawer.toggleMenu());
     }
 

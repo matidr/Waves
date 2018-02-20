@@ -6,10 +6,11 @@
     <color name="colorAccent">#e04970</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
-    <color name="icons">#FFFFFF</color>
+    <color name="icons">#FDFDFD</color>
     <color name="divider">#BDBDBD</color>
     <color name="sand">#d5c1b2</color>
     <color name="transparency_pink">#73e04970</color>
+    <color name="panel_background">#E6e04970</color>
 
     <color name="bg">#f5f5f5</color>
     <color name="bgnew">#464756</color>

@@ -2,13 +2,11 @@ package com.dirusso.waves;
 
 import android.content.Context;
 
-import com.dirusso.waves.presenter.AddBeachInfoPresenter;
 import com.dirusso.waves.presenter.FragmentBeachPresenter;
 import com.dirusso.waves.presenter.MainActivityPresenter;
 import com.dirusso.waves.presenter.MapFragmentPresenter;
 import com.dirusso.waves.utils.SharedPreferencesUtils;
 import com.google.common.collect.Lists;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +19,6 @@ import dirusso.services.business.WavesApiClientImpl;
 import dirusso.services.business.WavesRepository;
 import dirusso.services.business.WavesRestClient;
 import dirusso.services.models.Beach;
-import dirusso.services.models.LatitudeLongitude;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -128,22 +125,16 @@ public class ApplicationModule {
     @Provides
     @Singleton
     public List<Beach> providesTestingBeach() {
-        LatitudeLongitude upLeft = new LatitudeLongitude(-34.911527, -56.145071);
+        /*LatitudeLongitude upLeft = new LatitudeLongitude(-34.911527, -56.145071);
         LatitudeLongitude upRight = new LatitudeLongitude(-34.909697, -56.142764);
         LatitudeLongitude downLeft = new LatitudeLongitude(-34.912081, -56.144255);
         LatitudeLongitude downRight = new LatitudeLongitude(-34.910480, -56.141584);
-        Beach beach = new Beach.Builder(upLeft, upRight, downLeft, downRight).withId(1234)
+        Beach beach = new Beach.Builder(upLeft, upRight, downLeft, downRight).withId(1)
                                                                              .withName("Playa Pocitos KIBON")
                                                                              .withDescription("La playa de pocitos es una hermosa playa para " +
                                                                                      "relajarse que no se ajusta a deportes acuaticos")
                                                                              .build();
-        return Lists.newArrayList(beach);
-        //        return Lists.newArrayList();
-    }
-
-    @Provides
-    @Singleton
-    public AddBeachInfoPresenter providesAddBeachInfoPresenter(WavesRepository repository) {
-        return new AddBeachInfoPresenter(repository);
+        return Lists.newArrayList(beach);*/
+        return Lists.newArrayList();
     }
 }

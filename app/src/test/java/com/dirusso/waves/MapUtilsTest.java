@@ -26,7 +26,7 @@ public class MapUtilsTest {
         LatitudeLongitude upRight = new LatitudeLongitude(-34.909697, -56.142764);
         LatitudeLongitude downLeft = new LatitudeLongitude(-34.912081, -56.144255);
         LatitudeLongitude downRight = new LatitudeLongitude(-34.910480, -56.141584);
-        return new Beach.Builder(upLeft, upRight, downLeft, downRight).withId(1234)
+        return new Beach.Builder(upLeft, upRight, downLeft, downRight).withId(1)
                 .withName("Playa Pocitos KIBON")
                 .withDescription("La playa de pocitos es una hermosa playa para " +
                         "relajarse que no se ajusta a deportes acuaticos")

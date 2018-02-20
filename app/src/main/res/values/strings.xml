@@ -11,4 +11,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="location_permission_not_granted">Location permissions was not granted.</string>
     <string name="user_profile_photo">http://baobaoloveyou.com/flowingdrawer_icon.png</string>
+    <string name="open_weather_maps_app_id">f6e368c3c20c7a0654eb67ad7d668a26</string>
 </resources>

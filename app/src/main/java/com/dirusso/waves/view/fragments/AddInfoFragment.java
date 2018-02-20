@@ -14,17 +14,12 @@ import android.widget.TextView;
 
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import com.dirusso.waves.R;
-import com.dirusso.waves.adapters.SingleFiltersAdapter;
+import com.dirusso.waves.adapters.AddInfoAdapter;
 import com.dirusso.waves.models.Attribute;
-import com.dirusso.waves.presenter.AddBeachInfoPresenter;
 import com.google.common.collect.Lists;
 
 import java.io.Serializable;
 import java.util.List;
-
-import javax.inject.Inject;
-
-import dirusso.services.models.Beach;
 
 /**
  * Created by matia on 1/31/2018.
@@ -33,19 +28,15 @@ import dirusso.services.models.Beach;
 public class AddInfoFragment extends AAH_FabulousFragment {
     private static final String BEACH = "beach";
     private static final String ATTRIBUTE_LIST = "attributeList";
-    @Inject
-    protected AddBeachInfoPresenter presenter;
     ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
     ImageButton imgbtn_apply;
-    Beach beach;
     private ListView attributesLv;
     private MapFragment mapFragment;
     private List<Attribute.AttributeType> attributeList;
 
-    public static AddInfoFragment newInstance(List<Attribute.AttributeType> attributes, Beach beach) {
+    public static AddInfoFragment newInstance(List<Attribute.AttributeType> attributes) {
         Bundle args = new Bundle();
         args.putSerializable(ATTRIBUTE_LIST, (Serializable) attributes);
-        args.putSerializable(BEACH, beach);
         AddInfoFragment addInfoFragment = new AddInfoFragment();
         addInfoFragment.setArguments(args);
         return addInfoFragment;
@@ -54,9 +45,8 @@ public class AddInfoFragment extends AAH_FabulousFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null && getArguments().containsKey(ATTRIBUTE_LIST) && getArguments().containsKey(BEACH)) {
+        if (getArguments() != null && getArguments().containsKey(ATTRIBUTE_LIST)) {
             attributeList = (List<Attribute.AttributeType>) getArguments().getSerializable(ATTRIBUTE_LIST);
-            beach = (Beach) getArguments().getSerializable(BEACH);
         }
         mapFragment = (MapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map_fragment_container);
         applied_filters = mapFragment.getApplied_filters();
@@ -77,20 +67,16 @@ public class AddInfoFragment extends AAH_FabulousFragment {
                 TextView nameTv = item.findViewById(R.id.filter_single_name);
                 SeekBar seekBar = item.findViewById(R.id.filter_single_seekbar);
                 if (nameTv.getTag() != null && nameTv.getTag().equals("selected")) {
-                    if (!nameTv.getText().toString().equalsIgnoreCase("JELLYFISH")) {
-                        resultList.add(Attribute.getAttribute(nameTv.getText().toString(), seekBar.getProgress()));
-                    } else {
-                        resultList.add(Attribute.getAttribute("JELLYFISH"));
-                    }
+                    resultList.add(Attribute.getAttribute(nameTv.getText().toString(), seekBar.getProgress()));
                 }
             }
-            mapFragment.sendBeachInfo(beach, resultList);
+            mapFragment.sendBeachInfo(resultList);
             imgbtn_apply.setEnabled(false);
             closeFilter(applied_filters);
         });
 
         attributesLv = contentView.findViewById(R.id.add_info_attributes_listview);
-        SingleFiltersAdapter adapter = new SingleFiltersAdapter(getActivity(), attributeList);
+        AddInfoAdapter adapter = new AddInfoAdapter(getActivity(), attributeList);
         attributesLv.setAdapter(adapter);
 
 
