@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 19
@@ -26,20 +26,20 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support'
         exclude group: 'com.google.code.findbugs'
     })
-    provided 'com.google.guava:guava:22.0'
+    compileOnly 'com.google.guava:guava:24.1-jre'
 
-    provided 'io.reactivex:rxjava:1.1.6'
-    provided 'com.squareup.retrofit2:retrofit:2.2.0'
-    provided 'com.squareup.retrofit2:converter-gson:2.2.0'
-    provided 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compileOnly 'io.reactivex:rxjava:1.1.6'
+    compileOnly 'com.squareup.retrofit2:retrofit:2.4.0'
+    compileOnly 'com.squareup.retrofit2:converter-gson:2.2.0'
+    compileOnly 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
 
-    provided 'com.google.dagger:dagger:2.7'
+    compileOnly 'com.google.dagger:dagger:2.17'
 
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    testImplementation 'junit:junit:4.12'
 }

@@ -69,7 +69,6 @@ import dirusso.services.models.AttributeValue;
 import dirusso.services.models.Beach;
 import dirusso.services.models.Profile;
 
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
 
 
 /**
@@ -711,7 +710,7 @@ public class MapFragment extends BaseFragment implements MapFragmentView, BeachV
                         String[] weatherInfo = presenter.getWeatherInfo(getContext(), location);
                         wait(5000);
 
-                        runOnUiThread(() -> {
+                        getActivity().runOnUiThread(() -> {
                             if (weatherInfo != null && weatherInfo[0] != null && weatherInfo[1] != null) {
                                 weatherTemp.setText(weatherInfo[0] + "°C");
                                 weatherIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), ImageUtils.getWeatherDrawable(weatherInfo[1])));
